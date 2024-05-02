@@ -62,7 +62,7 @@ Below are my articles, sorted by their most recent publication dates. Where appl
 
 
 ## Feedback and Contacts
-Your feedback is important! If you have any questions, suggestions, or feedback regarding this repository, please don't hesitate to reach out to me via [**LinkedIn**](https://www.linkedin.com/in/luigi-battistoni/).
+Your feedback is important! If you have any questions, suggestions, or feedback, please don't hesitate to reach out to me via [**LinkedIn**](https://www.linkedin.com/in/luigi-battistoni/).
 
 
 
