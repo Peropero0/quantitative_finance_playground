@@ -45,6 +45,41 @@ class VectorialBacktest():
 
         return short_leg
 
+    @staticmethod
+    def _compute_max_drawdown(equity_line):
+        peak = -np.inf  # Initialize peak value
+        drawdown = 0     # Initialize drawdown value
+        max_drawdown = 0 # Initialize maximum drawdown value
+
+        for i in range(len(equity_line)):
+            if equity_line[i] > peak:
+                peak = equity_line[i]
+            else:
+                drawdown = (peak - equity_line[i]) / peak
+                if drawdown > max_drawdown:
+                    max_drawdown = drawdown
+
+        return max_drawdown
+
+    @staticmethod
+    def _compute_metrics(trades_df, equity_line_df, total_commissions):
+        annualised_return = equity_line_df['portfolio_value'].pct_change().mean() * 252
+        annualised_std = equity_line_df['portfolio_value'].pct_change().std() * np.sqrt(252)
+        sharpe = annualised_return / annualised_std
+        max_drawdown = VectorialBacktest._compute_max_drawdown(equity_line_df['portfolio_value'].values)
+        calmar = annualised_return / abs(max_drawdown)
+
+        return  {
+            'annualised_return': annualised_return,
+            'annualised_std': annualised_std,
+            'sharpe': sharpe,
+            'max_drawdown': max_drawdown,
+            'calmar': calmar,
+            'total_commissions': total_commissions
+        }
+
+
+
     def do_backtest(self):
         # Sort signals dataframe to get the top n and bottom n signals
         top_n = self.get_long_leg_instruments_weights()
@@ -57,9 +92,10 @@ class VectorialBacktest():
 
         # Calculate transaction costs
         transaction_costs = self.commissions / 10000  # Convert basis points to decimal
-
+        
         # Initialize DataFrame to store portfolio returns
         equity_line = []
+        total_commissions = 0
 
         # Initialize cash balance
         portfolio_value = self.initial_cash
@@ -87,7 +123,8 @@ class VectorialBacktest():
 
             # subtract them from portfolio value
             portfolio_value -= daily_costs
-
+            total_commissions += daily_costs
+            
             # daily forward returns
             fwd_returns = fwd_returns_df.loc[datetime]
 
@@ -103,4 +140,6 @@ class VectorialBacktest():
         equity_line_df = pd.concat(equity_line)
         equity_line_df.index = equity_line_df.index.rename('datetime')
 
-        return trades_df, equity_line_df
+        backtest_metrics = VectorialBacktest._compute_metrics(trades_df, equity_line_df, total_commissions)
+
+        return trades_df, equity_line_df, backtest_metrics
