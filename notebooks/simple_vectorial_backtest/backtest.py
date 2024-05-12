@@ -96,7 +96,7 @@ class VectorialBacktest():
 
     # compute backtest metrics
     @staticmethod
-    def _compute_metrics(trades_df, equity_line_df, total_commissions):
+    def _compute_metrics(trades_df, equity_line_df):
         cumulative_return = equity_line_df.iloc[-1]['portfolio_value'] / equity_line_df.iloc[0]['portfolio_value'] - 1
         annualised_return = equity_line_df['portfolio_value'].pct_change().mean() * 252
         annualised_std = equity_line_df['portfolio_value'].pct_change().std() * np.sqrt(252)
@@ -111,7 +111,6 @@ class VectorialBacktest():
             'sharpe': sharpe,
             'max_drawdown': max_drawdown,
             'calmar': calmar,
-            'total_commissions': total_commissions
         }
 
 
@@ -126,56 +125,51 @@ class VectorialBacktest():
         portfolio_weights_df = portfolio_weights_df['signal'].unstack()
         portfolio_weights_df = portfolio_weights_df.fillna(0)  # Fill NaNs with 0s
 
-        # transaction costs
-        transaction_costs = self.commissions / 10000  # Convert basis points to decimal
-        
-        equity_line = []
-        total_commissions = 0
-        portfolio_value = self.initial_cash
-
         # compute forward returns for each asset
         # this is done in order to compute the daily pnl
         fwd_returns_df = self.prices.pct_change().shift(-1)
 
-        # loop through each datetime
-        for i in range(len(self.prices.index) - 1):
-            datetime = fwd_returns_df.index[i]
-            equity_line.append(pd.DataFrame({'portfolio_value': [portfolio_value]}, index=[datetime]))
+        # commissions
+        transaction_costs = self.commissions / 10000  # Convert basis points to decimal
 
 
-            # get weights for current datetime
-            weights = portfolio_weights_df.loc[datetime]
+        # now do the backtest
+        # first instantiate the dataframe containing the necessary info
+        portfolio_value = pd.DataFrame()
 
-            if i == 0:
-                previous_weights = pd.Series(np.zeros(weights.size), index=weights.index)
-            else:
-                previous_weights = portfolio_weights_df.loc[fwd_returns_df.index[i-1]]
-            
-            # total weights difference. This represents the trades that were made.
-            sum_of_absolute_weights_difference = abs(weights - previous_weights).sum()
+        # compute the weights change with relation to the last period
+        weights_change = portfolio_weights_df.diff().fillna(0)
 
-            # compute the transaction costs, that is the total value of trades made multiplied by transaction costs
-            daily_costs = sum_of_absolute_weights_difference * transaction_costs * portfolio_value
+        # set the first change as the actual weights.
+        weights_change.iloc[0] = portfolio_weights_df.iloc[0]
 
-            # subtract them from portfolio value
-            portfolio_value -= daily_costs
-            total_commissions += daily_costs
-            
-            # daily forward returns
-            fwd_returns = fwd_returns_df.loc[datetime]
+        # now compute the absoulte sum of weights difference, useful to compute commissions 
+        sum_of_absolute_weights_difference = abs(weights_change).sum(axis=1)
 
-            # total portfolio return (at the end of the candle)
-            total_return = (weights * fwd_returns).sum()
+        # the gross return of the period is 1 + the sum of weight multiplied by fwd returns
+        # notice that these returns happen at the end of the next bar, so they happen in the future
+        # we should shift our final equity line by 1 bar in the future
+        # we will do this at the end of the computation
+        portfolio_value['gross_return'] = 1 + (portfolio_weights_df * fwd_returns_df).sum(axis=1)
 
-            # apply the return to the portfolio, after acconting for costs
-            portfolio_value *= 1 + total_return
+        # compute the daily costs in percentage
+        portfolio_value['daily_percentage_costs'] = sum_of_absolute_weights_difference * transaction_costs
+        
+        # and the gross daily costs
+        portfolio_value['gross_daily_percentage_costs'] = 1 - portfolio_value['daily_percentage_costs']
 
-        # format the portfolio equity line in a DataFrame
-        equity_line.append(pd.DataFrame({'portfolio_value': [portfolio_value]}, index=[datetime]))
-        equity_line_df = pd.concat(equity_line)
-        equity_line_df.index = equity_line_df.index.rename('datetime')
+        # the total return in percentage is the gross return multiplied by gross costs
+        portfolio_value['total_return'] = portfolio_value['gross_return'] * portfolio_value['gross_daily_percentage_costs']
+        
+        # then we can obtain our equity line by computing the total return for each datapoint
+        # and multiplying by initial cash. Moreover we shift the curve, as discussed previously
+        portfolio_value = portfolio_value.shift()
+        portfolio_value['portfolio_value'] = portfolio_value['total_return'].cumprod() * self.initial_cash
+        portfolio_value.loc[portfolio_value.index[0], 'portfolio_value'] = self.initial_cash
 
         # compute metrics
-        backtest_metrics = VectorialBacktest._compute_metrics(portfolio_weights_df, equity_line_df, total_commissions)
+        backtest_metrics = VectorialBacktest._compute_metrics(portfolio_weights_df, 
+                                                              portfolio_value[['portfolio_value']] 
+                                                              )
 
-        return portfolio_weights_df, equity_line_df, backtest_metrics
+        return portfolio_weights_df, portfolio_value[['portfolio_value']], backtest_metrics
