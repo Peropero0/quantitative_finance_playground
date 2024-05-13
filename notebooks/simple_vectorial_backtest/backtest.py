@@ -19,6 +19,9 @@ The arguments of the constructor are:
 The weights of the long only strategy sum to 1, the weights of the long short strategy sum to 0 and their absolute value sums to 1.
 This is done in order to keep the leverage at 1.
 
+As a final note, signals are expected to be traded at candle close of the same day. This could be not feasible in some cases.
+You can modify the code to allow for customised execution.
+
 """
 
 import pandas as pd
