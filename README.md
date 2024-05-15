@@ -13,6 +13,15 @@ When I'm not crunching numbers, I'm absorbed in the pages of a book or tending t
 ## Articles
 Below are my articles, sorted by their most recent publication dates. Where applicable, I will provide links to Python notebooks containing the plots and computations used in each piece.
 
+
+- [**Backtesting a systematic trading strategy in Python**](https://medium.com/@lu.battistoni/backtesting-a-systematic-trading-strategy-in-python-e08263e888ab)
+  
+   -- May 2024 --
+
+  [Notebook](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/simple_vectorial_backtest/simple_vectorial_backtest.ipynb)
+
+  *In quantitative finance, and algorithmic trading in general, it’s crucial to test your ideas in the past to have a guess of how they could perform in the future. In this article, I will help you build a fast vectorial backtest in Python that can easily be customised for any of your need.*
+
 - [**Distribution of the Order Flow in Python**](https://medium.com/technological-singularity/distribution-of-the-order-flow-in-python-d7ba059dbf13)
   
    -- Apr 2024 --
