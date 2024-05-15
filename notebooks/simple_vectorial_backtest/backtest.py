@@ -10,7 +10,7 @@ The backtest is equally weighted, meaning that, for each leg, every instrument w
 
 The arguments of the constructor are:
 - signals: pd.DataFrame indexed by datetime and asset and with a column called 'signal' with strategy signals
-- prices: pd.DataFrame indexed by datetime. The columns are the asset prices
+- prices: pd.DataFrame indexed by datetime and asset. The columns are the open and close prices of the candles.
 - initial_cash: a float that represents the initial value of the equity line
 - commissions: a float representing how many basis points a transaction costs
 - number_of_instruments_long_leg: int representing how many instruments to go long
@@ -19,7 +19,7 @@ The arguments of the constructor are:
 The weights of the long only strategy sum to 1, the weights of the long short strategy sum to 0 and their absolute value sums to 1.
 This is done in order to keep the leverage at 1.
 
-As a final note, signals are expected to be traded at candle close of the same day. This could be not feasible in some cases.
+As a final note, signals are expected to be opened at candle open of the next day and closed at candle close.
 You can modify the code to allow for customised execution.
 
 """
@@ -116,6 +116,14 @@ class VectorialBacktest():
             'calmar': calmar,
         }
 
+    # compute forward returns for each asset. Forward returns are computed open to close
+    # of t+1 with respect to signal t
+    def get_forward_returns(self):
+        # first compute open to close returns
+        open_to_close_returns = (self.prices['close'] / self.prices['open']) - 1
+        
+        # then make them forward
+        return open_to_close_returns.unstack().shift(-1)
 
 
     def do_backtest(self):
@@ -130,7 +138,7 @@ class VectorialBacktest():
 
         # compute forward returns for each asset
         # this is done in order to compute the daily pnl
-        fwd_returns_df = self.prices.pct_change().shift(-1)
+        fwd_returns_df = self.get_forward_returns()
 
         # commissions
         transaction_costs = self.commissions / 10000  # Convert basis points to decimal
