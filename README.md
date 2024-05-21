@@ -13,6 +13,14 @@ When I'm not crunching numbers, I'm absorbed in the pages of a book or tending t
 ## Articles
 Below are my articles, sorted by their most recent publication dates. Where applicable, I will provide links to Python notebooks containing the plots and computations used in each piece.
 
+- [**Understanding Pandas MultiIndex in Finance**](https://medium.com/@lu.battistoni/understanding-pandas-multiindex-in-finance-cdfdda16f792)
+  
+   -- May 2024 --
+
+  [Notebook](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/general_python_tutorials/multiindexing_tutorial.ipynb)
+
+  *Pandas is just a great Python library for Quantitative Finance and Data Science in general. It allows you to easily manipulate data and in particular timeseries. Something that new users usually struggle with is using Pandas MultiIndexes effectively. A deep understanding of basic functions like groupby, stack and resample is crucial in your journey to becoming a Pandas pro! In this article I will show you some examples to clarify how to use MultiIndexing together with the functions mentioned above.*
+
 
 - [**Backtesting a systematic trading strategy in Python**](https://medium.com/@lu.battistoni/backtesting-a-systematic-trading-strategy-in-python-e08263e888ab)
   
