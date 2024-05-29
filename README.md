@@ -13,6 +13,15 @@ When I'm not crunching numbers, I'm absorbed in the pages of a book or tending t
 ## Articles
 Below are my articles, sorted by their most recent publication dates. Where applicable, I will provide links to Python notebooks containing the plots and computations used in each piece.
 
+
+- [**8 Options Trading rules to be successful**](https://medium.com/@lu.battistoni/8-options-trading-rules-to-be-successful-5418f469137f)
+  
+   -- May 2024 --
+
+  *I recently started reading George Kleinman’s book about Futures and Options trading and I was fascinated by his writing style and how clearly he explains complex concepts.
+  In this article I want to share with you a passage about Options trading and what to do and to avoid in Mr. Kleinman’s opinion, based on his vast trading experience.*
+
+
 - [**Understanding Pandas MultiIndex in Finance**](https://medium.com/@lu.battistoni/understanding-pandas-multiindex-in-finance-cdfdda16f792)
   
    -- May 2024 --
