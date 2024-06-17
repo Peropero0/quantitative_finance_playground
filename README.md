@@ -14,6 +14,21 @@ When I'm not crunching numbers, I'm absorbed in the pages of a book or tending t
 Below are my articles, sorted by their most recent publication dates. Where applicable, I will provide links to Python notebooks containing the plots and computations used in each piece.
 
 
+
+- [**Exploratory Data Analysis in Python**](https://medium.com/@lu.battistoni/exploratory-data-analysis-in-python-6a41a7505f5b)
+  
+   -- June 2024 --
+  
+  [Notebooks](https://github.com/Peropero0/quantitative_finance_playground/tree/main/notebooks/finance_notebooks/temperature_analysis)
+
+  *When working with new datasets, one of the initial steps is to familiarize yourself with the data. This involves thoroughly understanding the contents and characteristics of the new information you are handling. This process is called Exploratory Data Analysis (EDA) and can highlight serious problems with data. When feeding data into machine learning algorithms, you want to avoid some specific problems. In this article I will download a dataset for US Temperatures and I will point out some of these relevant problems. In particular, I will solve a seasonality and non-stationarity problem and I will underline a non-point-in-timeness issue.*
+
+- [**Understanding Futures contract specifications**](https://medium.com/@lu.battistoni/understanding-futures-contract-specifications-c8be50844acd)
+  
+   -- June 2024 --
+
+  *Navigating the vast world of financial Futures can be overwhelming: there are a lot of concepts to understand and not grasping something could lead to huge potential losses. In this article, I would like to show you some example of how to read the specifications of Futures contracts, discuss what tick size and lot size are and in general clarify some details that I struggled with in my early days of Futures trading.*
+
 - [**8 Options Trading rules to be successful**](https://medium.com/@lu.battistoni/8-options-trading-rules-to-be-successful-5418f469137f)
   
    -- May 2024 --
