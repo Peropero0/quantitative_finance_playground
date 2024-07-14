@@ -1,5 +1,6 @@
 from order import Order
 from prettytable import PrettyTable
+import numpy as np
 
 class OrderBook:
 
@@ -20,8 +21,12 @@ class OrderBook:
 
         if order_type == 'market_buy':
             # market buy
-            best_available_ask_price, best_available_ask_quantity = self.asks.pop(0) # TODO: add check that the ask actually exists
-
+            try:
+                best_available_ask_price, best_available_ask_quantity = self.asks.pop(0)
+            except Exception:
+                # ask is empty
+                return
+            
             if quantity >= best_available_ask_quantity:
                 self.execute_market_order(quantity - best_available_ask_quantity, 'market_buy')
             else:
@@ -30,8 +35,11 @@ class OrderBook:
 
         elif order_type == 'market_sell':
             # market sell
-            best_available_bid_price, best_available_bid_quantity = self.bids.pop(0) # TODO: add check that the bid actually exists
-
+            try:
+                best_available_bid_price, best_available_bid_quantity = self.bids.pop(0)
+            except Exception:
+                # bid is empty
+                return
             if quantity >= best_available_bid_quantity:
                 self.execute_market_order(quantity - best_available_bid_quantity, 'market_sell')
             else:
@@ -64,12 +72,11 @@ class OrderBook:
                 best_available_ask_quantity = 0
                 
             if price >= best_available_ask_price:
-                self.execute_market_order(best_available_ask_quantity, 'market_buy')
-                if best_available_ask_quantity - quantity < 0:
-                    # new best ask
-                    best_available_ask_price, _ = self.asks[0] # TODO: add check that the ask actually exists
-
-                self.add_limit_order(best_available_ask_price, best_available_ask_quantity - quantity, 'limit_sell')
+                if quantity > best_available_ask_quantity:
+                    self.execute_market_order(best_available_ask_quantity, 'market_buy')
+                    self.add_limit_order(price, quantity - best_available_ask_quantity, 'limit_buy')
+                elif quantity <= best_available_ask_quantity:
+                    self.execute_market_order(quantity, 'market_buy') 
 
             elif price < best_available_ask_price:
                 try:
@@ -97,12 +104,13 @@ class OrderBook:
                 best_available_bid_quantity = 0
 
             if price <= best_available_bid_price:
-                self.execute_market_order(best_available_bid_quantity, 'market_sell')
-                if best_available_bid_quantity - quantity < 0:
-                    # new best bid
-                    best_available_bid_price, _ = self.bids[0] # TODO: add check that the ask actually exists
-                
-                self.add_limit_order(best_available_bid_price, best_available_bid_quantity - quantity, 'limit_buy')
+                if quantity > best_available_bid_quantity:
+                    self.execute_market_order(best_available_bid_quantity, 'market_sell')
+                    self.add_limit_order(price, quantity - best_available_bid_quantity, 'limit_sell')
+
+                elif quantity <= best_available_bid_quantity:
+                    self.execute_market_order(quantity, 'market_sell')    
+
 
             elif price > best_available_bid_price:
                 try:
@@ -150,4 +158,22 @@ class OrderBook:
 
         print(table)
         print("")
+
+    def get_mid_price(self):
+        try:
+            return (self.asks[0][0] + self.bids[0][0]) / 2
+        except Exception:
+            return np.nan
+
+    def get_micro_price(self):
+        try:
+            price_ask = self.asks[0][0]
+            volume_ask = self.asks[0][1]
+
+            price_bid = self.bids[0][0]
+            volume_bid = self.bids[0][1]
+
+            return ((volume_bid * price_ask) + (volume_ask * price_bid)) / (volume_ask + volume_bid)
+        except Exception:
+            return np.nan
 
