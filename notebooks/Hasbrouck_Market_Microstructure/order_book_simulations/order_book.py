@@ -1,4 +1,32 @@
+from prettytable import PrettyTable
+
+class Order():
+
+    supported_orders = (
+        'market_buy',
+        'market_sell',
+        'limit_buy',
+        'limit_sell')
+
+    def __init__(self, order_type, price, quantity):
+
+        if order_type not in self.supported_orders:
+            raise ValueError(f'valid values for order_type are {self.supported_orders}.\nYou passed {order_type}')
+            
+        self.order_type = order_type
+
+        # other checks:
+        # price > 0, quantity > 0, if market_order you should pass no prices, if limit you should pass it
+        self.price = price
+        self.quantity = quantity
+
+        # add the attribute order id if you want to implement the cancel order feature  
+
+
+    
+
 class OrderBook:
+
     def __init__(self):
         self.bids = []  # list of (price, quantity)
         self.asks = []  # list of (price, quantity)
@@ -6,6 +34,7 @@ class OrderBook:
         self.price_mid = []
         self.price_weighted = []
         self.bid_ask_spread = []
+        
 
     def execute_market_order(self, quantity, order_type):
         # execute a market order, getting the first available ask if buying
@@ -52,8 +81,12 @@ class OrderBook:
             # this means that you go into the bid part of the book and place an order.
             # if you place an order with a price >= than the best ask, then you are executed
 
-            best_available_ask_price, best_available_ask_quantity = self.asks[0] # TODO: add check that the ask actually exists
-            
+            try:
+                best_available_ask_price, best_available_ask_quantity = self.asks[0] # TODO: add check that the ask actually exists
+            except Exception:
+                best_available_ask_price = price + 1
+                best_available_ask_quantity = 0
+                
             if price >= best_available_ask_price:
                 self.execute_market_order(best_available_ask_quantity, 'market_buy')
                 if best_available_ask_quantity - quantity < 0:
@@ -63,7 +96,11 @@ class OrderBook:
                 self.add_limit_order(best_available_ask_price, best_available_ask_quantity - quantity, 'limit_sell')
 
             elif price < best_available_ask_price:
-                best_available_bid_price, _ = self.bids[0] # TODO: add check that the ask actually exists
+                try:
+                    best_available_bid_price, _ = self.bids[0] # TODO: add check that the ask actually exists
+                except Exception:
+                    best_available_bid_price = -1
+
                 if price > best_available_bid_price:
                     self.bids.append((price, quantity))
                     self.bids.sort(key=lambda x: x[0], reverse=True)
@@ -77,8 +114,12 @@ class OrderBook:
                     self.bids.sort(key=lambda x: x[0], reverse=True)                       
 
         elif order_type == 'limit_sell':
-            best_available_bid_price, best_available_bid_quantity = self.bids[0] # TODO: add check that the ask actually exists
-            
+            try:
+                best_available_bid_price, best_available_bid_quantity = self.bids[0] # TODO: add check that the ask actually exists
+            except Exception:
+                best_available_bid_price = -1
+                best_available_bid_quantity = 0
+
             if price <= best_available_bid_price:
                 self.execute_market_order(best_available_bid_quantity, 'market_sell')
                 if best_available_bid_quantity - quantity < 0:
@@ -88,7 +129,11 @@ class OrderBook:
                 self.add_limit_order(best_available_bid_price, best_available_bid_quantity - quantity, 'limit_buy')
 
             elif price > best_available_bid_price:
-                best_available_ask_price, _ = self.asks[0] # TODO: add check that the ask actually exists
+                try:
+                    best_available_ask_price, _ = self.asks[0] # TODO: add check that the ask actually exists
+                except Exception:
+                    best_available_ask_price = price + 1
+
                 if price < best_available_ask_price:
                     self.asks.append((price, quantity))
                     self.asks.sort(key=lambda x: x[0])
@@ -101,28 +146,70 @@ class OrderBook:
                     self.asks.append((price, quantity))
                     self.asks.sort(key=lambda x: x[0])   
 
+
+    def add_order_to_the_order_book(self, order: Order):
+        if order.order_type in ('market_buy', 'market_sell'):
+            self.execute_market_order(order.quantity, order.order_type)
+        elif order.order_type in ('limit_buy', 'limit_sell'):
+            self.add_limit_order(order.price, order.quantity, order.order_type)
+        else:
+            print(f"order {order.order_type} not supported")
+
+
     def cancel_order(self, order_id):
         # advanced stuff, I will not do this for the moment
+        # if you want to implement a logic of order cancelling, you should
+        # pass an order id attribute to the Order class
         pass
 
+    def print_order_book_state(self):
+        table = PrettyTable()
+        table.field_names = ['price', 'quantity', 'side']
+
+        asks = self.asks[::-1]
+        for _, (price, quantity) in enumerate(asks):
+            table.add_row((price, quantity, 'ask'))
+        for _, (price, quantity) in enumerate(self.bids):
+            table.add_row((price, quantity, 'bid'))
+
+        print(table)
+        print("")
 
 
+class Trader():
+    def __init__(self):
+        # here you can set different trader attributes
+        # like the initial cash, the trading strategy type, the risk aversion, etc...
+        #self.cash = initial_cash
+        #self.trader_id = trader_id
+        pass
+
+    def submit_order_to_order_book(self, order_type, price, quantity, book: OrderBook, verbose=False):
+        order = Order(order_type=order_type, price=price, quantity=quantity)
+        book.add_order_to_the_order_book(order)
+
+        if verbose:
+            print("\nAdding the following order:")
+            print(f"order type: {order_type}, price: {price}, quantity: {quantity}\n")
+            book.print_order_book_state()
+
+        return book
+
+
+
+
+trader = Trader()
 book = OrderBook()
-book.asks = [(10,15),(11,4)]
-book.bids = [(9,15),(8,4)]
 
-print(book.asks)
-print(book.bids)
-print("")
+trader.submit_order_to_order_book(order_type='limit_buy', price=9, quantity=15, book=book)
+trader.submit_order_to_order_book(order_type='limit_buy', price=8, quantity=4, book=book)
 
-book.add_limit_order(price=11, quantity=16, order_type='limit_buy')
+trader.submit_order_to_order_book(order_type='limit_sell', price=11, quantity=4, book=book)
+trader.submit_order_to_order_book(order_type='limit_sell', price=10, quantity=15, book=book)
 
-print(book.asks)
-print(book.bids)
-print("")
+book.print_order_book_state()
 
-book.add_limit_order(price=8, quantity=16, order_type='limit_sell')
+trader.submit_order_to_order_book(order_type='limit_buy', price=11, quantity=5, book=book, verbose=True)
+trader.submit_order_to_order_book(order_type='limit_sell', price=8, quantity=5, book=book, verbose=True)
 
-print(book.asks)
-print(book.bids)
-print("")
+
