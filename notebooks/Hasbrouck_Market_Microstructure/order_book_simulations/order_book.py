@@ -1,29 +1,5 @@
+from order import Order
 from prettytable import PrettyTable
-
-class Order():
-
-    supported_orders = (
-        'market_buy',
-        'market_sell',
-        'limit_buy',
-        'limit_sell')
-
-    def __init__(self, order_type, price, quantity):
-
-        if order_type not in self.supported_orders:
-            raise ValueError(f'valid values for order_type are {self.supported_orders}.\nYou passed {order_type}')
-            
-        self.order_type = order_type
-
-        # other checks:
-        # price > 0, quantity > 0, if market_order you should pass no prices, if limit you should pass it
-        self.price = price
-        self.quantity = quantity
-
-        # add the attribute order id if you want to implement the cancel order feature  
-
-
-    
 
 class OrderBook:
 
@@ -174,42 +150,4 @@ class OrderBook:
 
         print(table)
         print("")
-
-
-class Trader():
-    def __init__(self):
-        # here you can set different trader attributes
-        # like the initial cash, the trading strategy type, the risk aversion, etc...
-        #self.cash = initial_cash
-        #self.trader_id = trader_id
-        pass
-
-    def submit_order_to_order_book(self, order_type, price, quantity, book: OrderBook, verbose=False):
-        order = Order(order_type=order_type, price=price, quantity=quantity)
-        book.add_order_to_the_order_book(order)
-
-        if verbose:
-            print("\nAdding the following order:")
-            print(f"order type: {order_type}, price: {price}, quantity: {quantity}\n")
-            book.print_order_book_state()
-
-        return book
-
-
-
-
-trader = Trader()
-book = OrderBook()
-
-trader.submit_order_to_order_book(order_type='limit_buy', price=9, quantity=15, book=book)
-trader.submit_order_to_order_book(order_type='limit_buy', price=8, quantity=4, book=book)
-
-trader.submit_order_to_order_book(order_type='limit_sell', price=11, quantity=4, book=book)
-trader.submit_order_to_order_book(order_type='limit_sell', price=10, quantity=15, book=book)
-
-book.print_order_book_state()
-
-trader.submit_order_to_order_book(order_type='limit_buy', price=11, quantity=5, book=book, verbose=True)
-trader.submit_order_to_order_book(order_type='limit_sell', price=8, quantity=5, book=book, verbose=True)
-
 
