@@ -159,13 +159,13 @@ class OrderBook:
         print(table)
         print("")
 
-    def get_mid_price(self):
+    def return_mid_price(self):
         try:
             return (self.asks[0][0] + self.bids[0][0]) / 2
         except Exception:
             return np.nan
 
-    def get_micro_price(self):
+    def return_micro_price(self):
         try:
             price_ask = self.asks[0][0]
             volume_ask = self.asks[0][1]
@@ -177,3 +177,11 @@ class OrderBook:
         except Exception:
             return np.nan
 
+    def return_bid_ask_spread(self):
+        try:
+            price_ask = self.asks[0][0]
+            price_bid = self.bids[0][0]
+
+            return price_ask - price_bid
+        except Exception:
+            return np.nan
