@@ -1,8 +1,29 @@
+from typing import List
 from matplotlib import pyplot as plt
 
 
-def plot_order_flow(book_state_sequence, price_sequence=None, volumes_sequence=None, buy_sequence=None, sell_sequence=None):
+def plot_order_flow(book_state_sequence: List[List], price_sequence: List =None, volumes_sequence: List =None, buy_sequence: List =None, sell_sequence: List =None):
+    """ Plot the sequence of snapshots of the order book, that is the order flow.
+        Moreover, you can plot the executed trades, volumes and prices.
 
+        inputs:
+        - book_state_sequence (List[List]): list of lists that contains the sequence of book states. Every state is an order book snapshot.
+                        Every snapshot is made like this: [[time,price_ask,volume,'ask']],[[time,price_bid,volume,'bid']].
+                        If you have more than one ask or bid, list the asks ascending and bids descending.
+                        Example of a book_state_sequence for 2 timesteps:
+                        [
+                        [[1,101,2,'ask'],[1,102,7,'ask'],[1,103,2,'ask']],[[1,99,5,'bid'],[1,98,7,'bid'],[1,97,2,'bid']],
+                        [[2,101,4,'ask'],[2,102,7,'ask'],[2,103,2,'ask']],[[2,99,5,'bid'],[2,98,7,'bid'],[2,97,2,'bid']],
+                        ]
+
+        - price_sequence (List): sequence of (executed) prices for the security, i.e. [100,98,98,102]
+        - volumes_sequence (List): sequence of executed volumes. i.e [8,7,0,3]. This requires a price_sequence. 
+        - buy_sequence (List): sequence with 1 if the executed price is a buy and 0 if it is not. i.e [1,0,0,1]. This requires a price_sequence.
+        - sell_sequence (List): sequence with 1 if the executed price is a sell and 0 if it is not. i.e [0,1,0,0]. This requires a price_sequence.
+                            Notice that a single entry isn't necessary a buy or a sell. Set it to 0 in both vectors (i.e. the number at the
+                            3rd place in the example) if the price didn't move (notice that its volume is 0 and the price didn't change)
+
+    """
     # Step 1: plot the order book in each timestep
 
     # Get Bid and Ask data in two different lists
@@ -36,7 +57,7 @@ def plot_order_flow(book_state_sequence, price_sequence=None, volumes_sequence=N
     # axes labels
     ax.set_xlabel('Time')
     ax.set_ylabel('Price')
-    ax.set_title('Ask and Bid Prices with Volumes')
+    ax.set_title('Order Flow')
 
     # set axes limits
     ax.set_xlim(min(ask_times + bid_times), max(ask_times + bid_times))
