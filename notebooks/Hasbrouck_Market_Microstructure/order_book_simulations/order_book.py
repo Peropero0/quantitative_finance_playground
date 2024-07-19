@@ -9,17 +9,17 @@ class OrderBook:
     def __init__(self):
         self.bids = []  # list of (price, quantity)
         self.asks = []  # list of (price, quantity)
-        self.transactions_log = [] # list of (time, order_type, price, quantity)
-        self.price_mid = []
-        self.price_weighted = []
-        self.bid_ask_spread = []
+
         self.trades = {}
         self.time = 0
 
         self.price_sequence = []
+        self.mid_price_sequence = []
         self.volumes_sequence = []
         self.buy_sequence = []
         self.sell_sequence = []
+        self.book_state_sequence = []
+
 
     def execute_market_order(self, quantity, order_type):
         # execute a market order, getting the first available ask if buying
@@ -178,6 +178,8 @@ class OrderBook:
         else:
             print(f"order {order.order_type} not supported")
 
+        self.update_book_state_sequence()
+        self.update_mid_price_sequence()
         self.update_price_volume_sequences()
 
     def cancel_order(self, order_id):
@@ -260,3 +262,24 @@ class OrderBook:
             self.volumes_sequence.append(0)
             self.buy_sequence.append(0)
             self.sell_sequence.append(0)
+
+
+    def update_book_state_sequence(self):
+        ask_list = []
+        bid_list = []
+
+        for i, (price, quantity) in enumerate(self.asks):
+            ask_list.append([self.time, price, quantity, 'ask'])
+
+        self.book_state_sequence.append(ask_list)
+
+        for i, (price, quantity) in enumerate(self.bids):
+            bid_list.append([self.time, price, quantity, 'bid'])
+
+        self.book_state_sequence.append(bid_list)
+
+
+    def update_mid_price_sequence(self):
+        self.mid_price_sequence.append(self.return_mid_price())
+
+

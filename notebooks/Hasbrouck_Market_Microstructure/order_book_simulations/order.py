@@ -20,3 +20,7 @@ class Order():
         self.quantity = quantity
 
         # add the attribute order id if you want to implement the cancel order feature  
+
+    def print_order(self):
+        print(f"{self.order_type} - price: {self.price} - quantity: {self.quantity}")
+

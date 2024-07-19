@@ -9,13 +9,11 @@ class Trader():
         #self.trader_id = trader_id
         pass
 
-    def submit_order_to_order_book(self, order_type, price, quantity, book: OrderBook, verbose=False):
+    def submit_order_to_order_book(self, order_type, price, quantity, book: OrderBook):
         order = Order(order_type=order_type, price=price, quantity=quantity)
-        book.add_order_to_the_order_book(order)
 
-        if verbose:
-            print("\nAdding the following order:")
-            print(f"order type: {order_type}, price: {price}, quantity: {quantity}\n")
-            book.print_order_book_state()
+        order.print_order()
+
+        book.add_order_to_the_order_book(order)
 
         return book
