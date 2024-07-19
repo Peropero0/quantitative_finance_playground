@@ -1,6 +1,8 @@
 from order import Order
 from prettytable import PrettyTable
 import numpy as np
+from trade import Trade
+
 
 class OrderBook:
 
@@ -11,7 +13,13 @@ class OrderBook:
         self.price_mid = []
         self.price_weighted = []
         self.bid_ask_spread = []
-        
+        self.trades = {}
+        self.time = 0
+
+        self.price_sequence = []
+        self.volumes_sequence = []
+        self.buy_sequence = []
+        self.sell_sequence = []
 
     def execute_market_order(self, quantity, order_type):
         # execute a market order, getting the first available ask if buying
@@ -28,8 +36,21 @@ class OrderBook:
                 return
             
             if quantity >= best_available_ask_quantity:
+                #if quantity - best_available_ask_quantity > 0:
+                self.trades[self.time].append(
+                        Trade(
+                            price=best_available_ask_price, 
+                            volume=best_available_ask_quantity,
+                            direction='buy')
+                            ) 
                 self.execute_market_order(quantity - best_available_ask_quantity, 'market_buy')
             else:
+                self.trades[self.time].append(
+                    Trade(
+                        price=best_available_ask_price, 
+                        volume=quantity,
+                        direction='buy')
+                        ) 
                 self.asks.append((best_available_ask_price, best_available_ask_quantity - quantity))
                 self.asks.sort(key=lambda x: x[0])
 
@@ -41,8 +62,23 @@ class OrderBook:
                 # bid is empty
                 return
             if quantity >= best_available_bid_quantity:
+#                if quantity - best_available_bid_quantity > 0:
+                self.trades[self.time].append(
+                    Trade(
+                        price=best_available_bid_price, 
+                        volume=best_available_bid_quantity,
+                        direction='sell')
+                        )
+                            
                 self.execute_market_order(quantity - best_available_bid_quantity, 'market_sell')
             else:
+                self.trades[self.time].append(
+                    Trade(
+                        price=best_available_bid_price, 
+                        volume=quantity,
+                        direction='sell')
+                        ) 
+
                 self.bids.append((best_available_bid_price, best_available_bid_quantity - quantity))
                 self.bids.sort(key=lambda x: x[0], reverse=True)
     
@@ -132,6 +168,9 @@ class OrderBook:
 
 
     def add_order_to_the_order_book(self, order: Order):
+        self.time += 1
+        self.trades[self.time] = []
+
         if order.order_type in ('market_buy', 'market_sell'):
             self.execute_market_order(order.quantity, order.order_type)
         elif order.order_type in ('limit_buy', 'limit_sell'):
@@ -139,6 +178,7 @@ class OrderBook:
         else:
             print(f"order {order.order_type} not supported")
 
+        self.update_price_volume_sequences()
 
     def cancel_order(self, order_id):
         # advanced stuff, I will not do this for the moment
@@ -147,6 +187,8 @@ class OrderBook:
         pass
 
     def print_order_book_state(self):
+        print(f"\nOrder book at time {self.time}")
+
         table = PrettyTable()
         table.field_names = ['price', 'quantity', 'side']
 
@@ -185,3 +227,36 @@ class OrderBook:
             return price_ask - price_bid
         except Exception:
             return np.nan
+
+
+    def update_price_volume_sequences(self):
+        trades = self.trades[self.time]
+
+        if trades:
+            sum_of_volume = 0
+            price_executed = 0
+            direction = ''
+            for trade in trades:
+                sum_of_volume += trade.volume
+                price_executed = trade.price
+                direction = trade.direction
+            
+            self.price_sequence.append(price_executed)
+            self.volumes_sequence.append(sum_of_volume)
+
+            if direction == 'buy':
+                self.buy_sequence.append(1)
+                self.sell_sequence.append(0)
+            elif direction == 'sell':
+                self.buy_sequence.append(0)
+                self.sell_sequence.append(1)
+
+        else:
+            if self.price_sequence:
+                self.price_sequence.append(self.price_sequence[-1])
+            else:
+                self.price_sequence.append(self.return_mid_price())
+
+            self.volumes_sequence.append(0)
+            self.buy_sequence.append(0)
+            self.sell_sequence.append(0)
