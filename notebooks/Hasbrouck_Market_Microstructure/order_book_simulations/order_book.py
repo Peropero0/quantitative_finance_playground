@@ -45,12 +45,13 @@ class OrderBook:
                             ) 
                 self.execute_market_order(quantity - best_available_ask_quantity, 'market_buy')
             else:
-                self.trades[self.time].append(
-                    Trade(
-                        price=best_available_ask_price, 
-                        volume=quantity,
-                        direction='buy')
-                        ) 
+                if quantity != 0:
+                    self.trades[self.time].append(
+                        Trade(
+                            price=best_available_ask_price, 
+                            volume=quantity,
+                            direction='buy')
+                            ) 
                 self.asks.append((best_available_ask_price, best_available_ask_quantity - quantity))
                 self.asks.sort(key=lambda x: x[0])
 
@@ -72,12 +73,13 @@ class OrderBook:
                             
                 self.execute_market_order(quantity - best_available_bid_quantity, 'market_sell')
             else:
-                self.trades[self.time].append(
-                    Trade(
-                        price=best_available_bid_price, 
-                        volume=quantity,
-                        direction='sell')
-                        ) 
+                if quantity != 0:
+                    self.trades[self.time].append(
+                        Trade(
+                            price=best_available_bid_price, 
+                            volume=quantity,
+                            direction='sell')
+                            ) 
 
                 self.bids.append((best_available_bid_price, best_available_bid_quantity - quantity))
                 self.bids.sort(key=lambda x: x[0], reverse=True)

@@ -15,5 +15,3 @@ class Trader():
         order.print_order()
 
         book.add_order_to_the_order_book(order)
-
-        return book
