@@ -54,6 +54,19 @@ def plot_order_flow(book_state_sequence: List[List], price_sequence: List =None,
     for price in prices:
         ax.axhline(y=price, color='grey', linestyle='--', linewidth=0.5)
 
+    # Fill the area between the highest bid and the lowest ask for each time
+    # this is the bid ask spread
+    unique_times = sorted(set(ask_times + bid_times))
+    for t in unique_times:
+        ask_prices_at_t = [p for time, p in zip(ask_times, ask_prices) if time == t]
+        bid_prices_at_t = [p for time, p in zip(bid_times, bid_prices) if time == t]
+        
+        if ask_prices_at_t and bid_prices_at_t:
+            min_ask_price = min(ask_prices_at_t)
+            max_bid_price = max(bid_prices_at_t)
+            ax.fill_between([t - 1/2, t + 1/2], max_bid_price, min_ask_price, color='yellow', alpha=0.3, edgecolor='none')
+
+
     # axes labels
     ax.set_xlabel('Time')
     ax.set_ylabel('Price')
@@ -73,6 +86,6 @@ def plot_order_flow(book_state_sequence: List[List], price_sequence: List =None,
             ax.scatter(x, y, s=[val * 20 for val in [v * b for v,b in zip(volumes_sequence, buy_sequence)]], alpha=1, edgecolors='black', color='green')
             ax.scatter(x, y, s=[val * 20 for val in [v * s for v,s in zip(volumes_sequence, sell_sequence)]], alpha=1, edgecolors='black', color='red')
 
-        ax.legend(loc='upper right')
+        #ax.legend(loc='upper right')
 
     plt.show()
