@@ -1,24 +1,42 @@
+"""
+This class is the core of the order book simulator. This class allows a Trader object to place some
+Order objects as orders in the book. If the demand and the offer match, a Trade object is generated.
+
+This class allows to:
+- place limit orders
+- execute market orders
+- print the state of the order book
+- return various quantities (mid price, micro price, bid ask spread, traded price, traded volumes)
+
+Additional features that can be implemented in this simulator are the following:
+- order canceling
+- stop loss / take profit
+- implement ticks
+- order modifying
+
+"""
+
 from order import Order
 from prettytable import PrettyTable
 import numpy as np
 from trade import Trade
 
 
-class OrderBook:
+class OrderBook():
 
     def __init__(self):
         self.bids = []  # list of (price, quantity)
         self.asks = []  # list of (price, quantity)
 
-        self.trades = {}
-        self.time = 0
+        self.trades = {} # dictionary where the key is the time (you can see this as a snapshot number) and the value is the Trade object
+        self.time = 0 # time of the simulation, you can see this as an order book snapshot number
 
-        self.price_sequence = []
-        self.mid_price_sequence = []
-        self.volumes_sequence = []
-        self.buy_sequence = []
-        self.sell_sequence = []
-        self.book_state_sequence = []
+        self.price_sequence = [] # contains the sequence of executed prices
+        self.mid_price_sequence = [] # sequence of mid prices
+        self.volumes_sequence = [] # sequence of volumes of the executed prices
+        self.buy_sequence = [] # 1 if the trade was a buy, 0 otherwise
+        self.sell_sequence = [] # 1 if the trade was a sell, 0 otherwise
+        self.book_state_sequence = [] # wrapper for the book state
 
 
     def execute_market_order(self, quantity, order_type):
@@ -30,40 +48,49 @@ class OrderBook:
         if order_type == 'market_buy':
             # market buy
             try:
+                # pop the best ask
                 best_available_ask_price, best_available_ask_quantity = self.asks.pop(0)
             except Exception:
                 # ask is empty
                 return
             
+            # if traded quantity > available quantity...
             if quantity >= best_available_ask_quantity:
-                #if quantity - best_available_ask_quantity > 0:
+                # ...the trade happens at the ask and all the available volumes at ask are traded
                 self.trades[self.time].append(
                         Trade(
                             price=best_available_ask_price, 
                             volume=best_available_ask_quantity,
                             direction='buy')
                             ) 
+                
+                # add another market order for the remaining quantity.
+                # this will call the function again and execute it on the new best ask
                 self.execute_market_order(quantity - best_available_ask_quantity, 'market_buy')
             else:
-                if quantity != 0:
+                # if the quantity is less than the available quantity...
+                if quantity != 0:  # <- this is useful to stop the recursion if the market order executes exactly the ask volumes
+                    # ... then trade 
                     self.trades[self.time].append(
                         Trade(
                             price=best_available_ask_price, 
                             volume=quantity,
                             direction='buy')
-                            ) 
+                            )
+                # since we popped the best ask, now we want to put it again the the asks sequence,
+                # with the updated volume 
                 self.asks.append((best_available_ask_price, best_available_ask_quantity - quantity))
                 self.asks.sort(key=lambda x: x[0])
 
         elif order_type == 'market_sell':
             # market sell
+            # the code is similar to market buy, but with the bids
             try:
                 best_available_bid_price, best_available_bid_quantity = self.bids.pop(0)
             except Exception:
                 # bid is empty
                 return
             if quantity >= best_available_bid_quantity:
-#                if quantity - best_available_bid_quantity > 0:
                 self.trades[self.time].append(
                     Trade(
                         price=best_available_bid_price, 
@@ -84,8 +111,11 @@ class OrderBook:
                 self.bids.append((best_available_bid_price, best_available_bid_quantity - quantity))
                 self.bids.sort(key=lambda x: x[0], reverse=True)
     
+
     @staticmethod
     def find_order_with_certain_price(order_book, price):
+        # this method finds the orders with a certain price
+        # this is useful to update the volumes of the orders when dealing with a limit order
         for index, (p, q) in enumerate(order_book):
             if p == price:
                 return index, p, q
@@ -104,39 +134,49 @@ class OrderBook:
             # if you place an order with a price >= than the best ask, then you are executed
 
             try:
-                best_available_ask_price, best_available_ask_quantity = self.asks[0] # TODO: add check that the ask actually exists
+                # get the best ask
+                best_available_ask_price, best_available_ask_quantity = self.asks[0]
             except Exception:
+                # if there is no ask add a fake one, in reality probably a dealer would execute your trade
                 best_available_ask_price = price + 1
                 best_available_ask_quantity = 0
                 
+            # if your limit buy has a price greater than the best ask, you are executed at the best ask
             if price >= best_available_ask_price:
+                # you are executed at the best ask for the volumes in the best ask
                 if quantity > best_available_ask_quantity:
                     self.execute_market_order(best_available_ask_quantity, 'market_buy')
+
+                    # then you are either executed at the next best ask or a limit buy is added
+                    # this does this logic recursively
                     self.add_limit_order(price, quantity - best_available_ask_quantity, 'limit_buy')
+                
+                # if the quantity is less than the available quantity, you are executed on the best ask
                 elif quantity <= best_available_ask_quantity:
                     self.execute_market_order(quantity, 'market_buy') 
 
+            # if your price is less than the best ask, then your order goes in the book
             elif price < best_available_ask_price:
+                # now check for the best bid
                 try:
-                    best_available_bid_price, _ = self.bids[0] # TODO: add check that the ask actually exists
+                    best_available_bid_price, _ = self.bids[0]
                 except Exception:
                     best_available_bid_price = -1
 
-                if price > best_available_bid_price:
-                    self.bids.append((price, quantity))
-                    self.bids.sort(key=lambda x: x[0], reverse=True)
-                else:
-                    index, _, q = OrderBook.find_order_with_certain_price(self.bids, price)
-                    if index is not None:
-                        self.bids.pop(index)
-                        quantity = quantity + q
+                # find the price level to add your limit order to.
+                # if no price level is found, then add a new one
+                index, _, q = OrderBook.find_order_with_certain_price(self.bids, price)
+                if index is not None:
+                    self.bids.pop(index)
+                    quantity = quantity + q
 
-                    self.bids.append((price, quantity))
-                    self.bids.sort(key=lambda x: x[0], reverse=True)                       
+                self.bids.append((price, quantity))
+                self.bids.sort(key=lambda x: x[0], reverse=True)                       
 
         elif order_type == 'limit_sell':
+            # this is similar to the limit buy situation
             try:
-                best_available_bid_price, best_available_bid_quantity = self.bids[0] # TODO: add check that the ask actually exists
+                best_available_bid_price, best_available_bid_quantity = self.bids[0]
             except Exception:
                 best_available_bid_price = -1
                 best_available_bid_quantity = 0
@@ -152,24 +192,21 @@ class OrderBook:
 
             elif price > best_available_bid_price:
                 try:
-                    best_available_ask_price, _ = self.asks[0] # TODO: add check that the ask actually exists
+                    best_available_ask_price, _ = self.asks[0]
                 except Exception:
                     best_available_ask_price = price + 1
 
-                if price < best_available_ask_price:
-                    self.asks.append((price, quantity))
-                    self.asks.sort(key=lambda x: x[0])
-                else:
-                    index, _, q = OrderBook.find_order_with_certain_price(self.asks, price)
-                    if index is not None:
-                        self.asks.pop(index)
-                        quantity = quantity + q
+                index, _, q = OrderBook.find_order_with_certain_price(self.asks, price)
+                if index is not None:
+                    self.asks.pop(index)
+                    quantity = quantity + q
 
-                    self.asks.append((price, quantity))
-                    self.asks.sort(key=lambda x: x[0])   
+                self.asks.append((price, quantity))
+                self.asks.sort(key=lambda x: x[0])   
 
 
     def add_order_to_the_order_book(self, order: Order):
+        # method used to add (or execute) an order in the order book 
         self.time += 1
         self.trades[self.time] = []
 
@@ -180,17 +217,14 @@ class OrderBook:
         else:
             print(f"order {order.order_type} not supported")
 
+        # update the lists useful to track various quantities
         self.update_book_state_sequence()
         self.update_mid_price_sequence()
         self.update_price_volume_sequences()
 
-    def cancel_order(self, order_id):
-        # advanced stuff, I will not do this for the moment
-        # if you want to implement a logic of order cancelling, you should
-        # pass an order id attribute to the Order class
-        pass
 
     def print_order_book_state(self):
+        # print the bid and the asks, with prices and volumess
         print(f"\nOrder book at time {self.time}")
 
         table = PrettyTable()
@@ -206,12 +240,14 @@ class OrderBook:
         print("")
 
     def return_mid_price(self):
+        # return the mid price, that is in the middle of the bid ask spread
         try:
             return (self.asks[0][0] + self.bids[0][0]) / 2
         except Exception:
             return np.nan
 
     def return_micro_price(self):
+        # return the microprice
         try:
             price_ask = self.asks[0][0]
             volume_ask = self.asks[0][1]
@@ -224,6 +260,7 @@ class OrderBook:
             return np.nan
 
     def return_bid_ask_spread(self):
+        # return the bid ask spread
         try:
             price_ask = self.asks[0][0]
             price_bid = self.bids[0][0]
