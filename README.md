@@ -14,6 +14,13 @@ When I'm not crunching numbers, I'm absorbed in the pages of a book or tending t
 Below are my articles, sorted by their most recent publication dates. Where applicable, I will provide links to Python notebooks containing the plots and computations used in each piece.
 
 
+- [**A brilliant way to represent the Order Flow in Python**](https://medium.com/@lu.battistoni/a-brilliant-way-to-represent-the-order-flow-in-python-fb96318e1070)
+  
+   -- July 2024 --
+  
+  [Notebook](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/Hasbrouck_Market_Microstructure/order_book_simulations/order_flow_representation.ipynb)
+
+  *In this article I will show you an insightful way to plot the Order Flow in Python. I learned about this method while reading Algorithmic and High-Frequency Trading, Álvaro Cartea (2015) and I was immediately fascinated by it. This representation provides an intuitive description of the evolution of the Order Book and of the change in price.*
 
 - [**Exploratory Data Analysis in Python**](https://medium.com/@lu.battistoni/exploratory-data-analysis-in-python-6a41a7505f5b)
   
