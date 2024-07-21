@@ -14,6 +14,16 @@ When I'm not crunching numbers, I'm absorbed in the pages of a book or tending t
 Below are my articles, sorted by their most recent publication dates. Where applicable, I will provide links to Python notebooks containing the plots and computations used in each piece.
 
 
+
+- [**An Order Book simulator in Python**](https://medium.com/@lu.battistoni/an-order-book-simulator-in-python-b7b59ec82258)
+  
+   -- July 2024 --
+  
+  [Folder](https://github.com/Peropero0/quantitative_finance_playground/tree/main/notebooks/Hasbrouck_Market_Microstructure/order_book_simulations)
+
+  *While I was studying the theory regarding market microstructure, I had the urge to run some practical experiments. Getting quality data about the Order Book is not an easy task for an individual: data can be really expensive, it contains a lot of information and has a huge size. These two issues motivated me to build a fast and reliable framework in which you can run experiments. This framework is highly customizable and will allow you to make your own hypothesis about the Traders, Market Makers and the general behavior of the Order Book, in order to develop algorithmic trading strategies. In this article, I will explain to you how to use the framework, what are its limitations and what you can do to improve it. In the next months, I will implement new features to overcome the limitations of the very first building blocks that I am proposing you. Moreover, I will myself run experiments using this framework, getting inspiration from books and papers.*
+
+
 - [**A brilliant way to represent the Order Flow in Python**](https://medium.com/@lu.battistoni/a-brilliant-way-to-represent-the-order-flow-in-python-fb96318e1070)
   
    -- July 2024 --
