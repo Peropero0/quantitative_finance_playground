@@ -2,7 +2,50 @@ from typing import List
 from matplotlib import pyplot as plt
 
 
-def plot_order_flow(book_state_sequence: List[List], price_sequence: List =None, volumes_sequence: List =None, buy_sequence: List =None, sell_sequence: List =None):
+def number_of_decimal_digits(number):
+    # convert in str
+    num_str = str(number)
+    
+    # find the 'dot'
+    if '.' in num_str:
+        # count the digits after the dot
+        return len(num_str.split('.')[1])
+    else:
+        # no decimals, return 0
+        return 0
+    
+def add_missing_price_levels(list_with_price_levels, ask_or_bid, ticksize=0.1):
+    price_level_per_time = {}
+
+    # price levels for each time
+    for item in list_with_price_levels:
+        time = item[0]
+        price_level = item[1]
+        if time not in price_level_per_time:
+            price_level_per_time[time] = []
+        price_level_per_time[time].append(price_level)
+    
+    # generate and add new price levels
+    new_price_levels = []
+    c = number_of_decimal_digits(ticksize)
+
+    for time, price_levels in price_level_per_time.items():
+        min_price_level = min(price_levels)
+        max_price_level = max(price_levels)
+
+        # generate missing price levels
+        new_price_level = round(min_price_level + ticksize, c)
+        while new_price_level < max_price_level:
+            if new_price_level not in price_levels:
+                # volume is zero
+                new_price_levels.append([time, new_price_level, 0, ask_or_bid])
+            new_price_level = round(new_price_level + ticksize, c)
+    
+    list_with_price_levels.extend(new_price_levels)
+    return list_with_price_levels
+
+    
+def plot_order_flow(book_state_sequence: List[List], price_sequence: List =None, volumes_sequence: List =None, buy_sequence: List =None, sell_sequence: List =None, ticksize: float = 1):
     """ Plot the sequence of snapshots of the order book, that is the order flow.
         Moreover, you can plot the executed trades, volumes and prices.
 
@@ -22,7 +65,7 @@ def plot_order_flow(book_state_sequence: List[List], price_sequence: List =None,
         - sell_sequence (List): sequence with 1 if the executed price is a sell and 0 if it is not. i.e [0,1,0,0]. This requires a price_sequence.
                             Notice that a single entry isn't necessary a buy or a sell. Set it to 0 in both vectors (i.e. the number at the
                             3rd place in the example) if the price didn't move (notice that its volume is 0 and the price didn't change)
-
+        - ticksize (float): size of minimum tick. if ask or bid are missing between ticks, an order with volume = 0 will be added in that price level
     """
     # Step 1: plot the order book in each timestep
 
@@ -30,14 +73,21 @@ def plot_order_flow(book_state_sequence: List[List], price_sequence: List =None,
     ask_data = [item for sublist in book_state_sequence for item in sublist if item[3] == 'ask']
     bid_data = [item for sublist in book_state_sequence for item in sublist if item[3] == 'bid']
 
+    # add missing price levels
+    ask_data = add_missing_price_levels(ask_data, ticksize=ticksize, ask_or_bid='ask')
+    bid_data = add_missing_price_levels(bid_data, ticksize=ticksize, ask_or_bid='bid')
+
+    ask_data = sorted(ask_data, key=lambda x: (x[0], x[1]))
+    bid_data = sorted(bid_data, key=lambda x: (x[0], -x[1]))
+
     # get volumes and prices
     ask_times, ask_prices, ask_volumes = zip(*[(d[0], d[1], d[2]) for d in ask_data])
     bid_times, bid_prices, bid_volumes = zip(*[(d[0], d[1], d[2]) for d in bid_data])
 
     # Normalise the volumes
     max_volume = max(max(ask_volumes), max(bid_volumes))
-    norm_ask_volumes = [v / max_volume for v in ask_volumes]
-    norm_bid_volumes = [v / max_volume for v in bid_volumes]
+    norm_ask_volumes = [v  * ticksize / max_volume for v in ask_volumes]
+    norm_bid_volumes = [v  * ticksize / max_volume for v in bid_volumes]
 
     fig, ax = plt.subplots()
 
