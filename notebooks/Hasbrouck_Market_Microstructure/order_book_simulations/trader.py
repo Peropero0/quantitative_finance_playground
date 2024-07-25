@@ -15,11 +15,14 @@ In further iterations, it could contain
 from order import Order
 from order_book import OrderBook
 
+import numpy as np
+
 class Trader():
-    def __init__(self):
+    def __init__(self, initial_wealth=100, number_units_stock=0):
         # here you can set different trader attributes
         # like the initial cash, the trading strategy type, the risk aversion, etc...
-        #self.cash = initial_cash
+        self.wealth = initial_wealth
+        self.number_units_stock = number_units_stock
         #self.trader_id = trader_id
         pass
 
@@ -30,3 +33,4 @@ class Trader():
         order.print_order()
 
         book.add_order_to_the_order_book(order)
+
