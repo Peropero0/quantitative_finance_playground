@@ -45,7 +45,7 @@ def add_missing_price_levels(list_with_price_levels, ask_or_bid, ticksize=0.1):
     return list_with_price_levels
 
     
-def plot_order_flow(book_state_sequence: List[List], price_sequence: List =None, volumes_sequence: List =None, buy_sequence: List =None, sell_sequence: List =None, ticksize: float = 1):
+def plot_order_flow(book_state_sequence: List[List], price_sequence: List =None, volumes_sequence: List =None, buy_sequence: List =None, sell_sequence: List =None, ticksize: float = 1, y_max = None, y_min = None):
     """ Plot the sequence of snapshots of the order book, that is the order flow.
         Moreover, you can plot the executed trades, volumes and prices.
 
@@ -137,5 +137,8 @@ def plot_order_flow(book_state_sequence: List[List], price_sequence: List =None,
             ax.scatter(x, y, s=[val * 20 for val in [v * s for v,s in zip(volumes_sequence, sell_sequence)]], alpha=1, edgecolors='black', color='red')
 
         #ax.legend(loc='upper right')
+
+    if y_min and y_max:
+        plt.ylim(y_min, y_max)
 
     plt.show()
