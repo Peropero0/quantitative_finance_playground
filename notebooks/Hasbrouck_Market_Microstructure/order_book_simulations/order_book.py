@@ -37,7 +37,15 @@ class OrderBook():
         self.buy_sequence = [] # 1 if the trade was a buy, 0 otherwise
         self.sell_sequence = [] # 1 if the trade was a sell, 0 otherwise
         self.book_state_sequence = [] # wrapper for the book state
-
+        self.bid_ask_spread_sequence = [] # sequence of bid ask spreads
+        self.volume_imbalance_sequence = [] # sequence of volume imbalances
+        self.order_flow_imbalance_sequence = [] # sequence of order flow imbalances
+        self.last_best_bid_price = np.nan
+        self.last_best_ask_price = np.nan
+        self.last_best_bid_volume = np.nan
+        self.last_best_ask_volume = np.nan
+        self.depth_sequence_size = [] # sequence of depth of the book
+        self.depth_sequence_volumes = [] # sequence of depth of the book
 
     def execute_market_order(self, quantity, order_type):
         # execute a market order, getting the first available ask if buying
@@ -214,13 +222,21 @@ class OrderBook():
             self.execute_market_order(order.quantity, order.order_type)
         elif order.order_type in ('limit_buy', 'limit_sell'):
             self.add_limit_order(order.price, order.quantity, order.order_type)
-        else:
-            print(f"order {order.order_type} not supported")
+
+        # if no orders we want to update the book anyway
 
         # update the lists useful to track various quantities
-        self.update_book_state_sequence()
+
         self.update_mid_price_sequence()
+        self.update_bid_ask_spread_sequence()
         self.update_price_volume_sequences()
+        self.update_volume_imbalance_sequence()
+        self.update_order_flow_imbalance_sequence()
+        self.update_depth_sequence()
+
+
+        # last thing I do is updating the book state sequence
+        self.update_book_state_sequence()
 
 
     def print_order_book_state(self):
@@ -308,11 +324,19 @@ class OrderBook():
         bid_list = []
 
         for i, (price, quantity) in enumerate(self.asks):
+            if i == 0:
+                self.last_best_ask_price = price
+                self.last_best_ask_volume = quantity
+
             ask_list.append([self.time, price, quantity, 'ask'])
 
         self.book_state_sequence.append(ask_list)
 
         for i, (price, quantity) in enumerate(self.bids):
+            if i == 0:
+                self.last_best_bid_price = price
+                self.last_best_bid_volume = quantity
+
             bid_list.append([self.time, price, quantity, 'bid'])
 
         self.book_state_sequence.append(bid_list)
@@ -320,5 +344,81 @@ class OrderBook():
 
     def update_mid_price_sequence(self):
         self.mid_price_sequence.append(self.return_mid_price())
+
+
+    def update_bid_ask_spread_sequence(self):
+        self.bid_ask_spread_sequence.append(self.return_bid_ask_spread())
+
+
+    def return_volume_imbalance(self):
+        try:
+            volume_ask = self.asks[0][1]
+
+            volume_bid = self.bids[0][1]
+
+            return (volume_bid - volume_ask) / (volume_bid + volume_ask)
+        
+        except Exception:
+            return np.nan
+        
+
+    def update_volume_imbalance_sequence(self):
+        self.volume_imbalance_sequence.append(self.return_volume_imbalance())
+
+
+    def return_order_flow_imbalance(self):
+        try:
+            if self.time == 1:
+                return 0
+            
+            else:
+                price_ask = self.asks[0][0]
+                volume_ask = self.asks[0][1]
+
+                price_bid = self.bids[0][0]
+                volume_bid = self.bids[0][1]
+
+                if price_bid > self.last_best_bid_price:
+                    delta_volume_bid = volume_bid
+                elif price_bid < self.last_best_bid_price:
+                    delta_volume_bid =  - self.last_best_bid_volume
+                else:
+                    delta_volume_bid = volume_bid - self.last_best_bid_volume
+
+                if price_ask > self.last_best_ask_price:
+                    delta_volume_ask = - self.last_best_ask_volume
+                elif price_ask < self.last_best_ask_price:
+                    delta_volume_ask = volume_ask
+                else:
+                    delta_volume_ask = volume_ask - self.last_best_ask_volume
+
+
+                return delta_volume_bid - delta_volume_ask
+        
+        
+        except Exception:
+            return 0
+        
+
+    def update_order_flow_imbalance_sequence(self):
+        self.order_flow_imbalance_sequence.append(self.return_order_flow_imbalance())
+
+    def return_order_book_depth_size(self):
+        return (len(self.asks), len(self.bids))
+    
+    def return_order_book_depth_volumes(self):
+        sum_volumes_ask = 0
+        for a in self.asks:
+            sum_volumes_ask += a[1]
+
+        sum_volumes_bid = 0
+        for b in self.bids:
+            sum_volumes_bid += b[1]
+
+        return (sum_volumes_ask, sum_volumes_bid)
+
+    def update_depth_sequence(self):
+        self.depth_sequence_size.append(self.return_order_book_depth_size())
+        self.depth_sequence_volumes.append(self.return_order_book_depth_volumes())
 
 

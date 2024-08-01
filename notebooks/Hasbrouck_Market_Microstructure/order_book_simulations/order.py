@@ -8,7 +8,8 @@ class Order():
         'market_buy',
         'market_sell',
         'limit_buy',
-        'limit_sell')
+        'limit_sell',
+        'do_nothing')
 
     def __init__(self, order_type, price, quantity):
 

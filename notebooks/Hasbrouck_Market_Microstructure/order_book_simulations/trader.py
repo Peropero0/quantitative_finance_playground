@@ -26,11 +26,12 @@ class Trader():
         #self.trader_id = trader_id
         pass
 
-    def submit_order_to_order_book(self, order_type, price, quantity, book: OrderBook):
+    def submit_order_to_order_book(self, order_type, price, quantity, book: OrderBook, verbose=True):
         # generate an Order object and add it to the order book
         order = Order(order_type=order_type, price=price, quantity=quantity)
 
-        order.print_order()
+        if verbose:
+            order.print_order()
 
         book.add_order_to_the_order_book(order)
 
