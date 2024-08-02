@@ -15,6 +15,16 @@ Below are my articles, sorted by their most recent publication dates. Where appl
 
 
 
+- [**When should an investor prefer a Market Order over a Limit Order?**](https://medium.com/@lu.battistoni/when-should-an-investor-prefer-a-market-order-over-a-limit-order-593bc0fd6dd9)
+  
+   -- August 2024 --
+  
+  [Notebook](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/Hasbrouck_Market_Microstructure/order_book_simulations/experiment_1_CMSW_framework.ipynb)
+
+  *As I am finishing my journey through Hasbrouck’s Empirical Market Microstructure, I would like to talk about an interesting model that he describes in chapter 12. This model, called CMSW by the initials of its inventors, focuses on one fundamental question: When should an investor prefer a Market Order over a Limit Order? In this article, I will illustrate the assumptions of the model and the reasoning behind it. Moreover, I will use the framework built in one of my previous articles to run some simulations and test some theories.*
+
+
+
 - [**An Order Book simulator in Python**](https://medium.com/@lu.battistoni/an-order-book-simulator-in-python-b7b59ec82258)
   
    -- July 2024 --
