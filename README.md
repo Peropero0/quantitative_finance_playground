@@ -13,6 +13,13 @@ When I'm not crunching numbers, I'm absorbed in the pages of a book or tending t
 ## Articles
 Below are my articles, sorted by their most recent publication dates. Where applicable, I will provide links to Python notebooks containing the plots and computations used in each piece.
 
+- [**Using the Order Book depth to unveil informed trading**](https://medium.com/@lu.battistoni/using-the-order-book-depth-to-unveil-informed-trading-bc92b5288d94)
+  
+   -- August 2024 --
+  
+  [Notebook1](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/Hasbrouck_Market_Microstructure/order_book_simulations/experiment_2_informed_traders_and_depth.ipynb) -- [Notebook2](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/Hasbrouck_Market_Microstructure/order_book_simulations/experiment_3_risk_and_depth.ipynb)
+
+  *In my latest article of my market microstucture series, I introduced the CMSW model: a statistical framework useful to study the behavior of buyers and sellers in a Limit Order Book. In particular, the model is capable of giving quantitative measures that support the decision of whether to issue a limit order or a market order. In this piece, I show the results of some experiments I ran using the Order Book simulator that I previously built. The assumptions for the simulations are that a fraction of the buyers is informed about the future price of the security and that there is no market making.How is the (uninformed) agents’ expectation about the future price of the security related to the depth of the book (i.e. the total volumes of the limit orders)? What if we change the fraction of informed traders?*
 
 
 - [**When should an investor prefer a Market Order over a Limit Order?**](https://medium.com/@lu.battistoni/when-should-an-investor-prefer-a-market-order-over-a-limit-order-593bc0fd6dd9)
