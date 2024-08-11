@@ -13,6 +13,13 @@ When I'm not crunching numbers, I'm absorbed in the pages of a book or tending t
 ## Articles
 Below are my articles, sorted by their most recent publication dates. Where applicable, I will provide links to Python notebooks containing the plots and computations used in each piece.
 
+
+- [**Do you have what it takes to become a trader?**](https://medium.com/@lu.battistoni/do-you-have-what-it-takes-to-become-a-trader-cf3909e0f5da)
+  
+   -- August 2024 --
+  
+  *Exploring George Kleinman’s book about Futures and Options trading, I came across a very interesting chapter that I would like to share with you.In this chapter, the author talks about the legendary trader W.D. Gann and his 4 essential qualities to become a successful trader. What I found interesting, it’s Mr Kleinman’s brief commentary for each quality, talking about his experience as a several decades long trader and how you can translate in real terms the general suggestions by Mr. Gann.*
+
 - [**Using the Order Book depth to unveil informed trading**](https://medium.com/@lu.battistoni/using-the-order-book-depth-to-unveil-informed-trading-bc92b5288d94)
   
    -- August 2024 --
