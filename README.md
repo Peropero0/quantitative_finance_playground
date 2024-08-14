@@ -13,6 +13,14 @@ When I'm not crunching numbers, I'm absorbed in the pages of a book or tending t
 ## Articles
 Below are my articles, sorted by their most recent publication dates. Where applicable, I will provide links to Python notebooks containing the plots and computations used in each piece.
 
+- [**Must-Know in Statistics: The Bivariate Normal Projection Explained**](https://medium.com/@lu.battistoni/must-know-in-statistics-the-bivariate-normal-projection-explained-ace7b2f70b5b)
+  
+   -- August 2024 --
+
+   [Notebook](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/Hasbrouck_Market_Microstructure/bivariate_normal_projection.ipynb)
+  
+  *In statistics and machine learning, understanding the relationships between variables is crucial for building predictive models and analyzing data. One of the basic techniques for exploring these relationships is the bivariate projection, which relies on the concept of the bivariate normal distribution. This technique allows for the examination and prediction of the behavior of one variable in terms of another, utilizing the dependency structure between them. Bivariate projection helps determining the expected value of one random variable given a specific value of another variable. For instance, in linear regression, projection helps estimate how a dependent variable changes with respect to an independent variable.*
+
 
 - [**Do you have what it takes to become a trader?**](https://medium.com/@lu.battistoni/do-you-have-what-it-takes-to-become-a-trader-cf3909e0f5da)
   
