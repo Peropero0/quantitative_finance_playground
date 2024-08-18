@@ -16,10 +16,10 @@ Additional features that can be implemented in this simulator are the following:
 
 """
 
-from order import Order
+from classes.order import Order
 from prettytable import PrettyTable
 import numpy as np
-from trade import Trade
+from classes.trade import Trade
 
 
 class OrderBook():

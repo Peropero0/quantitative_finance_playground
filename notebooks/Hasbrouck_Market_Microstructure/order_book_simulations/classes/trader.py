@@ -12,8 +12,8 @@ In further iterations, it could contain
 - a generalised way to describe a trading strategy followed by the trader
 """
 
-from order import Order
-from order_book import OrderBook
+from classes.order import Order
+from classes.order_book import OrderBook
 
 import numpy as np
 
