@@ -18,20 +18,22 @@ from classes.order_book import OrderBook
 import numpy as np
 
 class Trader():
-    def __init__(self, initial_wealth=100, number_units_stock=0):
+    def __init__(self, initial_wealth=100, number_units_stock=0, trader_id=None):
         # here you can set different trader attributes
         # like the initial cash, the trading strategy type, the risk aversion, etc...
         self.wealth = initial_wealth
         self.number_units_stock = number_units_stock
-        #self.trader_id = trader_id
-        pass
+        self.trader_id = trader_id
+
 
     def submit_order_to_order_book(self, order_type, price, quantity, book: OrderBook, verbose=True):
         # generate an Order object and add it to the order book
-        order = Order(order_type=order_type, price=price, quantity=quantity)
+        order = Order(order_type=order_type, price=price, quantity=quantity, trader_id=self.trader_id)
 
         if verbose:
             order.print_order()
 
         book.add_order_to_the_order_book(order)
 
+
+    
