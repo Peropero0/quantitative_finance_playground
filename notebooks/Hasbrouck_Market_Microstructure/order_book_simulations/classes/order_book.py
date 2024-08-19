@@ -295,10 +295,26 @@ class OrderBook():
         table.field_names = ['price', 'quantity', 'side']
 
         asks = self.asks[::-1]
-        for _, (price, quantity) in enumerate(asks):
-            table.add_row((price, quantity, 'ask'))
-        for _, (price, quantity) in enumerate(self.bids):
-            table.add_row((price, quantity, 'bid'))
+
+        sums = {}
+        for p, v, _, _ in asks:
+            if p in sums:
+                sums[p] += v
+            else:
+                sums[p] = v
+
+        for p, v in list(sums.items()):
+            table.add_row((p, v, 'ask'))
+
+        sums = {}
+        for p, v, _, _ in self.bids:
+            if p in sums:
+                sums[p] += v
+            else:
+                sums[p] = v
+
+        for p, v in list(sums.items()):
+            table.add_row((p, v, 'bid'))
 
         print(table)
         print("")
