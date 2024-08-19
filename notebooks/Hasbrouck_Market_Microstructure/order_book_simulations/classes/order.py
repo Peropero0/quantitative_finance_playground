@@ -9,8 +9,8 @@ class Order():
         'market_sell',
         'limit_buy',
         'limit_sell',
-        'cancel_limit_buy',
-        'cancel_limit_sell',
+        'modify_limit_buy',
+        'modify_limit_sell',
         'do_nothing')
 
     def __init__(self, order_type, price, quantity, trader_id):

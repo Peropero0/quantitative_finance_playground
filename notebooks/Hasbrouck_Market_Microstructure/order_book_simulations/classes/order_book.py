@@ -152,23 +152,32 @@ class OrderBook():
         else:
             return orders
 
-    def cancel_order_from_the_order_book(self, price, quantity, order_type, trader_id):
-        if order_type == 'cancel_limit_buy':
+    def modify_order_of_the_order_book(self, price, quantity, order_type, trader_id):
+        if order_type == 'modify_limit_buy':
             where_to_look = self.bids
             rev = True
-        elif order_type == 'cancel_limit_sell':
+        elif order_type == 'modify_limit_sell':
             where_to_look = self.asks
             rev = False
         else:
             raise ValueError('Order type not supported')
         
-        index, _, q = OrderBook.find_order_with_certain_price(where_to_look, price)
-        if index is not None and q >= quantity:
-            where_to_look.pop(index)
-            quantity = q - quantity
+        orders = OrderBook.find_order_with_certain_price(where_to_look, price)
 
-            if quantity > 0:
-                where_to_look.append((price, quantity))
+        if orders is not None:
+            index, q, id = [(t[0], t[1][1], t[1][2]) for t in orders if t[1][3] == trader_id][0]
+
+            if q >= quantity:
+                where_to_look.pop(index)
+                quantity = q - quantity
+
+                if quantity > 0:
+                    # if something remains, then add it again to the book
+                    where_to_look.append((price, quantity, id, trader_id))
+
+            else:
+                # cancel the entire order
+                where_to_look.pop(index)
 
         if rev:
             self.bids = sorted(self.bids, key=lambda x: (-x[0], x[2]))
@@ -191,7 +200,7 @@ class OrderBook():
 
             try:
                 # get the best ask
-                best_available_ask_price, best_available_ask_quantity = self.asks[0]
+                best_available_ask_price, best_available_ask_quantity, bb_order_id, bb_trader_id = self.asks[0]
             except Exception:
                 # if there is no ask add a fake one, in reality probably a dealer would execute your trade
                 best_available_ask_price = price + 1
@@ -215,7 +224,7 @@ class OrderBook():
             elif price < best_available_ask_price:
                 # now check for the best bid
                 try:
-                    best_available_bid_price, _ = self.bids[0]
+                    best_available_bid_price, _, _, _ = self.bids[0]
                 except Exception:
                     best_available_bid_price = -1
 
@@ -226,7 +235,7 @@ class OrderBook():
         elif order_type == 'limit_sell':
             # this is similar to the limit buy situation
             try:
-                best_available_bid_price, best_available_bid_quantity = self.bids[0]
+                best_available_bid_price, best_available_bid_quantity, bb_order_id, bb_trader_id = self.bids[0]
             except Exception:
                 best_available_bid_price = -1
                 best_available_bid_quantity = 0
@@ -242,7 +251,7 @@ class OrderBook():
 
             elif price > best_available_bid_price:
                 try:
-                    best_available_ask_price, _ = self.asks[0]
+                    best_available_ask_price, _, _, _ = self.asks[0]
                 except Exception:
                     best_available_ask_price = price + 1
 
@@ -259,8 +268,8 @@ class OrderBook():
             self.execute_market_order(order.quantity, order.order_type, self.time, order.trader_id)
         elif order.order_type in ('limit_buy', 'limit_sell'):
             self.add_limit_order(order.price, order.quantity, order.order_type, self.time, order.trader_id)
-        elif order.order_type in ('cancel_limit_buy', 'cancel_limit_sell'):
-            self.cancel_order_from_the_order_book(order.price, order.quantity, order.order_type, order.trader_id)
+        elif order.order_type in ('modify_limit_buy', 'modify_limit_sell'):
+            self.modify_order_of_the_order_book(order.price, order.quantity, order.order_type, order.trader_id)
 
         # if no orders we want to update the book anyway
 
