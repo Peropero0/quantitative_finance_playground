@@ -152,16 +152,25 @@ class OrderBook():
         else:
             return orders
 
-    def modify_order_of_the_order_book(self, price, quantity, order_type, trader_id):
+    def modify_order_of_the_order_book(self, trader, price, quantity, order_type, trader_id):
         if order_type == 'modify_limit_buy':
             where_to_look = self.bids
             rev = True
+
+            # I already checked that this is feasible
+            trader.margin += (price * quantity)
+
         elif order_type == 'modify_limit_sell':
             where_to_look = self.asks
             rev = False
+
+            # I already checked that this is feasible
+            trader.number_units_stock += quantity
+
         else:
             raise ValueError('Order type not supported')
         
+
         orders = OrderBook.find_order_with_certain_price(where_to_look, price)
 
         if orders is not None:
@@ -190,7 +199,7 @@ class OrderBook():
         
 
 
-    def add_limit_order(self, price, quantity, order_type, order_id, trader_id):
+    def add_limit_order(self, trader, price, quantity, order_type, order_id, trader_id):
         # add a limit order to the order book
         # the rules are the following:
         # - buy limit order with price >= best ask -> you are executed at the best ask
@@ -214,12 +223,14 @@ class OrderBook():
             if price >= best_available_ask_price:
                 # you are executed at the best ask for the volumes in the best ask
                 if quantity > best_available_ask_quantity:
-                    self.execute_market_order(best_available_ask_quantity, 'market_buy', order_id, trader_id)
+                    if best_available_ask_quantity != 0:
+                        self.execute_market_order(best_available_ask_quantity, 'market_buy', order_id, trader_id)
 
                     # then you are either executed at the next best ask or a limit buy is added
                     # this does this logic recursively
-                    self.add_limit_order(price, quantity - best_available_ask_quantity, 'limit_buy', order_id, trader_id)
-                
+                    self.add_limit_order(trader, price, quantity - best_available_ask_quantity, 'limit_buy', order_id, trader_id)
+                    trader.margin -= (quantity - best_available_ask_quantity) * price
+
                 # if the quantity is less than the available quantity, you are executed on the best ask
                 elif quantity <= best_available_ask_quantity:
                     self.execute_market_order(quantity, 'market_buy', order_id, trader_id) 
@@ -234,7 +245,9 @@ class OrderBook():
 
 
                 self.bids.append((price, quantity, order_id, trader_id))
-                self.bids = sorted(self.bids, key=lambda x: (-x[0], x[2]))                
+                self.bids = sorted(self.bids, key=lambda x: (-x[0], x[2]))  
+
+                trader.margin -= (quantity * price)
 
         elif order_type == 'limit_sell':
             # this is similar to the limit buy situation
@@ -246,8 +259,11 @@ class OrderBook():
 
             if price <= best_available_bid_price:
                 if quantity > best_available_bid_quantity:
-                    self.execute_market_order(best_available_bid_quantity, 'market_sell', order_id, trader_id)
-                    self.add_limit_order(price, quantity - best_available_bid_quantity, 'limit_sell', order_id, trader_id)
+                    if best_available_bid_quantity != 0:
+                        self.execute_market_order(best_available_bid_quantity, 'market_sell', order_id, trader_id)
+                    self.add_limit_order(trader, price, quantity - best_available_bid_quantity, 'limit_sell', order_id, trader_id)
+                    
+                    trader.number_units_stock -= quantity - best_available_bid_quantity
 
                 elif quantity <= best_available_bid_quantity:
                     self.execute_market_order(quantity, 'market_sell', order_id, trader_id)    
@@ -262,8 +278,10 @@ class OrderBook():
                 self.asks.append((price, quantity, order_id, trader_id))
                 self.asks = sorted(self.asks, key=lambda x: (x[0], x[2]))
 
+                trader.number_units_stock -= quantity
 
-    def order_manager(self, order: Order, time=None):
+
+    def order_manager(self, order: Order, trader, time=None):
         # method used to add, execute or modify an order of the order book 
         if time is None:
             self.time += 1
@@ -275,9 +293,9 @@ class OrderBook():
         if order.order_type in ('market_buy', 'market_sell'):
             self.execute_market_order(order.quantity, order.order_type, self.time, order.trader_id)
         elif order.order_type in ('limit_buy', 'limit_sell'):
-            self.add_limit_order(order.price, order.quantity, order.order_type, self.time, order.trader_id)
+            self.add_limit_order(trader, order.price, order.quantity, order.order_type, self.time, order.trader_id)
         elif order.order_type in ('modify_limit_buy', 'modify_limit_sell'):
-            self.modify_order_of_the_order_book(order.price, order.quantity, order.order_type, order.trader_id)
+            self.modify_order_of_the_order_book(trader, order.price, order.quantity, order.order_type, order.trader_id)
 
         # if no orders we want to update the book anyway
 

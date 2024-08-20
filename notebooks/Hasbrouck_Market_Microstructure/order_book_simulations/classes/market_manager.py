@@ -46,6 +46,36 @@ class MarketManager():
         for simulation_step in range(1, self.simulation_length + 1):
             self.simulate_market(simulation_step, *args)
             
+            for trade in self.book.trades[simulation_step]:
+                trader_already_in_book = [
+                    trader for trader in self.traders if trader.trader_id == trade.trader_id_already_in_book
+                    ][0]
+                
+                trader_coming_in_book = [
+                    trader for trader in self.traders if trader.trader_id == trade.trader_id_coming_in_book
+                    ][0]
+                
+
+                if trade.direction == 'buy':
+                    trader_coming_in_book.wealth -= (trade.price * trade.volume)
+                    trader_coming_in_book.margin -= (trade.price * trade.volume)
+                    trader_coming_in_book.number_units_stock += trade.volume
+
+                    trader_already_in_book.wealth += (trade.price * trade.volume)
+                    trader_already_in_book.margin += (trade.price * trade.volume)
+                    
+                    # I already subtracted the number of shares when issuing the limit order!
+
+                elif trade.direction == 'sell':
+                    trader_coming_in_book.wealth += (trade.price * trade.volume)
+                    trader_coming_in_book.margin += (trade.price * trade.volume)
+                    trader_coming_in_book.number_units_stock -= trade.volume
+
+                    trader_already_in_book.wealth -= (trade.price * trade.volume)
+                    # I already subtracted the margin when issuing the limit order!
+                    trader_already_in_book.number_units_stock += trade.volume
+
+
             self.update_traders_wealth(simulation_step)
             self.update_traders_number_of_units_of_stock(simulation_step)
 

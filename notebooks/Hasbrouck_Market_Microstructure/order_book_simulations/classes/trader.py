@@ -47,7 +47,7 @@ class Trader():
                 order.print_order()
 
 
-            book.order_manager(order, time)
+            book.order_manager(order, self, time)
 
             self.update_active_orders(book)
 
