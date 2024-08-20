@@ -165,19 +165,23 @@ class OrderBook():
         orders = OrderBook.find_order_with_certain_price(where_to_look, price)
 
         if orders is not None:
-            index, q, id = [(t[0], t[1][1], t[1][2]) for t in orders if t[1][3] == trader_id][0]
+            while True:
+                # a trader could have many orders with that price
+                (index, q_in_order, id) = [(t[0], t[1][1], t[1][2]) for t in orders if t[1][3] == trader_id][0]
 
-            if q >= quantity:
                 where_to_look.pop(index)
-                quantity = q - quantity
+                quantity = q_in_order - quantity
 
                 if quantity > 0:
                     # if something remains, then add it again to the book
                     where_to_look.append((price, quantity, id, trader_id))
+                    break
+                elif quantity == 0:
+                    break
+                else:
+                    quantity = abs(quantity)
+                    orders = OrderBook.find_order_with_certain_price(where_to_look, price)
 
-            else:
-                # cancel the entire order
-                where_to_look.pop(index)
 
         if rev:
             self.bids = sorted(self.bids, key=lambda x: (-x[0], x[2]))
@@ -259,9 +263,13 @@ class OrderBook():
                 self.asks = sorted(self.asks, key=lambda x: (x[0], x[2]))
 
 
-    def add_order_to_the_order_book(self, order: Order):
-        # method used to add (or execute) an order in the order book 
-        self.time += 1
+    def order_manager(self, order: Order, time=None):
+        # method used to add, execute or modify an order of the order book 
+        if time is None:
+            self.time += 1
+        else:
+            self.time = time
+            
         self.trades[self.time] = []
 
         if order.order_type in ('market_buy', 'market_sell'):
