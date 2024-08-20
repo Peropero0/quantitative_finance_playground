@@ -1,6 +1,5 @@
 """
 This class contains the orders details, like the order type, the price and the quantity.
-It can be furtherly expanded with attributes like the order id and the trader that submitted the order. 
 """
 class Order():
 

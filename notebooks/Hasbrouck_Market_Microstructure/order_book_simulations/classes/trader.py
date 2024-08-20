@@ -3,12 +3,7 @@ This class can be used to contain various information about the traders.
 In this first iteration, it only contains the method used to place orders in the order book.
 
 In further iterations, it could contain 
-- the trader id, useful to track the orders and trades placed by each trader
-- a list of orders/trades id placed by the trader
-- a budget for the trader
 - a risk appetite or utility function
-- the number of units of stock owned by the trader (like an inventory)
-- a track of the pnl of the trader
 - a generalised way to describe a trading strategy followed by the trader
 """
 
@@ -53,6 +48,9 @@ class Trader():
 
 
     def update_active_orders(self, book):
+        """
+        Keep track of active orders issued by this trader
+        """
         active_limit_buys = [(bid[0], bid[1], bid[2], 'limit_buy') for bid in book.bids if bid[3] == self.trader_id ]
         active_limit_sells = [(ask[0], ask[1], ask[2], 'limit_sell') for ask in book.asks if ask[3] == self.trader_id ]
 
@@ -77,6 +75,9 @@ class Trader():
 
 
     def check_if_order_is_feasible(self, book, order_type, price, quantity):
+        """
+        Does the trader have enough margin or units to trade?
+        """
         if self.check_order_feasibility:
             # logic to check
             if order_type in ('market_buy', 'limit_buy'):

@@ -5,14 +5,12 @@ Order objects as orders in the book. If the demand and the offer match, a Trade 
 This class allows to:
 - place limit orders
 - execute market orders
+- modify orders
 - print the state of the order book
 - return various quantities (mid price, micro price, bid ask spread, traded price, traded volumes)
 
 Additional features that can be implemented in this simulator are the following:
-- order canceling
 - stop loss / take profit
-- implement ticks
-- order modifying
 
 """
 
@@ -80,6 +78,7 @@ class OrderBook():
                 
                 # add another market order for the remaining quantity.
                 # this will call the function again and execute it on the new best ask
+                # since we called the Trade class, we don't have to take care of margin and units
                 self.execute_market_order(quantity - best_available_ask_quantity, 'market_buy', order_id, trader_id)
             else:
                 # if the quantity is less than the available quantity...
@@ -95,8 +94,9 @@ class OrderBook():
                             order_id_already_in_book=bb_order_id,
                             order_id_coming_in_book=order_id)
                             )
-                # since we popped the best ask, now we want to put it again the the asks sequence,
+                # since we popped the best ask, now we want to put it again in the asks sequence,
                 # with the updated volume 
+                # since we called the Trade class, we don't have to take care of margin and units
                 self.asks.append((best_available_ask_price, best_available_ask_quantity - quantity, bb_order_id, bb_trader_id))
                 self.asks = sorted(self.asks, key=lambda x: (x[0], x[2]))
 
@@ -119,7 +119,8 @@ class OrderBook():
                         order_id_already_in_book=bb_order_id,
                         order_id_coming_in_book=order_id)
                         )
-                            
+                # since we called the Trade class, we don't have to take care of margin and units
+
                 self.execute_market_order(quantity - best_available_bid_quantity, 'market_sell', order_id, trader_id)
             else:
                 if quantity != 0:
@@ -133,6 +134,7 @@ class OrderBook():
                             order_id_already_in_book=bb_order_id,
                             order_id_coming_in_book=order_id)
                             ) 
+                # since we called the Trade class, we don't have to take care of margin and units
 
                 self.bids.append((best_available_bid_price, best_available_bid_quantity - quantity, bb_order_id, bb_trader_id))
                 self.bids = sorted(self.bids, key=lambda x: (-x[0], x[2]))

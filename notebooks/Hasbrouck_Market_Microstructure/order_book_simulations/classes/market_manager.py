@@ -1,3 +1,7 @@
+"""
+This class contains the logic of the simulation. You can run the simulations using the method run_market_manager.
+Write custom logic in the method simulate_market.
+"""
 from classes.trader import Trader
 from classes.order_book import OrderBook
 from abc import abstractmethod
@@ -45,42 +49,17 @@ class MarketManager():
 
         for simulation_step in range(1, self.simulation_length + 1):
             self.simulate_market(simulation_step, *args)
-            
-            for trade in self.book.trades[simulation_step]:
-                trader_already_in_book = [
-                    trader for trader in self.traders if trader.trader_id == trade.trader_id_already_in_book
-                    ][0]
-                
-                trader_coming_in_book = [
-                    trader for trader in self.traders if trader.trader_id == trade.trader_id_coming_in_book
-                    ][0]
-                
 
-                if trade.direction == 'buy':
-                    trader_coming_in_book.wealth -= (trade.price * trade.volume)
-                    trader_coming_in_book.margin -= (trade.price * trade.volume)
-                    trader_coming_in_book.number_units_stock += trade.volume
-
-                    trader_already_in_book.wealth += (trade.price * trade.volume)
-                    trader_already_in_book.margin += (trade.price * trade.volume)
-                    
-                    # I already subtracted the number of shares when issuing the limit order!
-
-                elif trade.direction == 'sell':
-                    trader_coming_in_book.wealth += (trade.price * trade.volume)
-                    trader_coming_in_book.margin += (trade.price * trade.volume)
-                    trader_coming_in_book.number_units_stock -= trade.volume
-
-                    trader_already_in_book.wealth -= (trade.price * trade.volume)
-                    # I already subtracted the margin when issuing the limit order!
-                    trader_already_in_book.number_units_stock += trade.volume
-
+            self.update_current_wealth_margin_and_units(simulation_step)
 
             self.update_traders_wealth(simulation_step)
             self.update_traders_number_of_units_of_stock(simulation_step)
 
     @abstractmethod
     def simulate_market(self, simulation_step, *args):
+        """
+        Here you can add a custom logic of how the traders should behave
+        """
         pass
 
 
@@ -92,5 +71,42 @@ class MarketManager():
     def update_traders_number_of_units_of_stock(self, simulation_step):
         for trader in self.traders:
             trader.number_units_stock_sequence.append((simulation_step, trader.number_units_stock))
+
+    
+    def update_current_wealth_margin_and_units(self, simulation_step):
+        """
+        This function is useful to update the current wealth, margin and units of each trader.
+
+        It uses the trades list of the book to update the quantities.
+        We don't update some quantities because we already did that in the order book class
+        """   
+        for trade in self.book.trades[simulation_step]:
+            trader_already_in_book = [
+                trader for trader in self.traders if trader.trader_id == trade.trader_id_already_in_book
+                ][0]
+            
+            trader_coming_in_book = [
+                trader for trader in self.traders if trader.trader_id == trade.trader_id_coming_in_book
+                ][0]
+            
+
+            if trade.direction == 'buy':
+                trader_coming_in_book.wealth -= (trade.price * trade.volume)
+                trader_coming_in_book.margin -= (trade.price * trade.volume)
+                trader_coming_in_book.number_units_stock += trade.volume
+
+                trader_already_in_book.wealth += (trade.price * trade.volume)
+                trader_already_in_book.margin += (trade.price * trade.volume)
+                
+                # I already subtracted the number of shares when issuing the limit order!
+
+            elif trade.direction == 'sell':
+                trader_coming_in_book.wealth += (trade.price * trade.volume)
+                trader_coming_in_book.margin += (trade.price * trade.volume)
+                trader_coming_in_book.number_units_stock -= trade.volume
+
+                trader_already_in_book.wealth -= (trade.price * trade.volume)
+                # I already subtracted the margin when issuing the limit order!
+                trader_already_in_book.number_units_stock += trade.volume
 
 
