@@ -31,6 +31,7 @@ class OrderBook():
 
         self.price_sequence = [] # contains the sequence of executed prices
         self.mid_price_sequence = [] # sequence of mid prices
+        self.micro_price_sequence = [] # sequence of micro prices
         self.volumes_sequence = [] # sequence of volumes of the executed prices
         self.buy_sequence = [] # 1 if the trade was a buy, 0 otherwise
         self.sell_sequence = [] # 1 if the trade was a sell, 0 otherwise
@@ -304,15 +305,16 @@ class OrderBook():
         # update the lists useful to track various quantities
 
         self.update_mid_price_sequence()
+        self.update_micro_price_sequence()
+
         self.update_bid_ask_spread_sequence()
         self.update_price_volume_sequences()
         self.update_volume_imbalance_sequence()
         self.update_order_flow_imbalance_sequence()
+
+        self.update_book_state_sequence()
         self.update_depth_sequence()
 
-
-        # last thing I do is updating the book state sequence
-        self.update_book_state_sequence()
 
 
     def print_order_book_state(self):
@@ -358,10 +360,12 @@ class OrderBook():
         # return the microprice
         try:
             price_ask = self.asks[0][0]
-            volume_ask = self.asks[0][1]
+            asks_orders = self.find_order_with_certain_price(self.asks, price_ask)
+            volume_ask = sum([v[1][1] for v in asks_orders])
 
             price_bid = self.bids[0][0]
-            volume_bid = self.bids[0][1]
+            bids_orders = self.find_order_with_certain_price(self.bids, price_bid)
+            volume_bid = sum([v[1][1] for v in bids_orders])
 
             return ((volume_bid * price_ask) + (volume_ask * price_bid)) / (volume_ask + volume_bid)
         except Exception:
@@ -412,25 +416,47 @@ class OrderBook():
 
 
     def update_book_state_sequence(self):
+    
         ask_list = []
         bid_list = []
 
-        for i, (price, quantity, order_id, trader_id) in enumerate(self.asks):
-            if i == 0:
-                self.last_best_ask_price = price
-                self.last_best_ask_volume = quantity
+        if self.asks:
+            sums = {}
+            first_ask = True
+            for p, v, _, _ in self.asks:
+                if first_ask:
+                    self.last_best_ask_price = p # quantity useful to compute the order flow imbalance
+                    first_ask = False
+                if p in sums:
+                    sums[p] += v
+                else:
+                    sums[p] = v
 
+            
+            ask_list = [[self.time, p, v, 'ask'] for p, v in sums.items()]
 
-            ask_list.append([self.time, price, quantity, 'ask'])
+            # quantity useful to compute the order flow imbalance
+            self.last_best_ask_volume = sums[self.last_best_ask_price]
 
         self.book_state_sequence.append(ask_list)
 
-        for i, (price, quantity, order_id, trader_id) in enumerate(self.bids):
-            if i == 0:
-                self.last_best_bid_price = price
-                self.last_best_bid_volume = quantity
+        if self.bids:
+            sums = {}
+            first_bid = True
+            for p, v, _, _ in self.bids:
+                if first_bid:
+                    self.last_best_bid_price = p # quantity useful to compute the order flow imbalance
+                    first_bid = False
+                if p in sums:
+                    sums[p] += v
+                else:
+                    sums[p] = v
 
-            bid_list.append([self.time, price, quantity, 'bid'])
+            
+            bid_list = [[self.time, p, v, 'bid'] for p, v in sums.items()]
+
+            # quantity useful to compute the order flow imbalance
+            self.last_best_bid_volume = sums[self.last_best_bid_price]
 
         self.book_state_sequence.append(bid_list)
 
@@ -438,6 +464,8 @@ class OrderBook():
     def update_mid_price_sequence(self):
         self.mid_price_sequence.append(self.return_mid_price())
 
+    def update_micro_price_sequence(self):
+        self.micro_price_sequence.append(self.return_micro_price())
 
     def update_bid_ask_spread_sequence(self):
         self.bid_ask_spread_sequence.append(self.return_bid_ask_spread())
@@ -445,9 +473,11 @@ class OrderBook():
 
     def return_volume_imbalance(self):
         try:
-            volume_ask = self.asks[0][1]
+            asks_orders = self.find_order_with_certain_price(self.asks, self.asks[0][0])
+            volume_ask = sum([v[1][1] for v in asks_orders])
 
-            volume_bid = self.bids[0][1]
+            bids_orders = self.find_order_with_certain_price(self.bids, self.bids[0][0])
+            volume_bid = sum([v[1][1] for v in bids_orders])
 
             return (volume_bid - volume_ask) / (volume_bid + volume_ask)
         
@@ -465,11 +495,14 @@ class OrderBook():
                 return 0
             
             else:
+                # sum volumes of orders with the same price
                 price_ask = self.asks[0][0]
-                volume_ask = self.asks[0][1]
+                asks_orders = self.find_order_with_certain_price(self.asks, price_ask)
+                volume_ask = sum([v[1][1] for v in asks_orders])
 
                 price_bid = self.bids[0][0]
-                volume_bid = self.bids[0][1]
+                bids_orders = self.find_order_with_certain_price(self.bids, price_bid)
+                volume_bid = sum([v[1][1] for v in bids_orders])
 
                 if price_bid > self.last_best_bid_price:
                     delta_volume_bid = volume_bid
@@ -497,7 +530,8 @@ class OrderBook():
         self.order_flow_imbalance_sequence.append(self.return_order_flow_imbalance())
 
     def return_order_book_depth_size(self):
-        return (len(self.asks), len(self.bids))
+        return (len(self.book_state_sequence[(self.time * 2) - 2]), 
+                len(self.book_state_sequence[(self.time * 2) - 1]))
     
     def return_order_book_depth_volumes(self):
         sum_volumes_ask = 0
