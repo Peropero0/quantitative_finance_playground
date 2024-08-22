@@ -20,8 +20,8 @@ Your feedback is important! If you have any questions, suggestions, or feedback,
 Below are my articles, organized in topics and sorted by their most recent publication date. Where applicable, I will provide links to Python notebooks containing the plots and computations used in each piece.
 
 - [Finance](#finance️)
-- [Statistics](#statistics)
 - [Python](#python)
+- [Statistics](#statistics)
 - [Philosophy](#philosophy)
 
 ## 
