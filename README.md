@@ -111,6 +111,10 @@ Below are my articles, organized in topics and sorted by their most recent publi
   - 📓 [Notebook](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/Hasbrouck_Market_Microstructure/bivariate_normal_projection.ipynb)
   - 📅 August 2024
 
+- 📄 **[Using the concept of Wú (無) for better hypothesis testing](https://medium.com/@lu.battistoni/using-the-concept-of-w%C3%BA-%E7%84%A1-for-better-hypothesis-testing-689fdbafaaf6)**
+  - 📓 [Notebook](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/statistics/wu_for_better_hypothesis_testing.ipynb)
+  - 📅 August 2024
+
 ##
 ### Philosophy
 [⬆️ Return to index](#articles)
