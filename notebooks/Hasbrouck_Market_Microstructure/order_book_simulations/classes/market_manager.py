@@ -55,6 +55,8 @@ class MarketManager():
             self.update_traders_wealth(simulation_step)
             self.update_traders_number_of_units_of_stock(simulation_step)
 
+            self.update_traders_active_orders()
+
     @abstractmethod
     def simulate_market(self, simulation_step, *args):
         """
@@ -91,22 +93,45 @@ class MarketManager():
             
 
             if trade.direction == 'buy':
-                trader_coming_in_book.wealth -= (trade.price * trade.volume)
-                trader_coming_in_book.margin -= (trade.price * trade.volume)
-                trader_coming_in_book.number_units_stock += trade.volume
+                trader_coming_in_book.wealth = round(
+                    trader_coming_in_book.wealth - (trade.price * trade.volume), 5)
+                trader_coming_in_book.margin = round(
+                    trader_coming_in_book.margin - (trade.price * trade.volume), 5)
+                trader_coming_in_book.number_units_stock = round(
+                    trader_coming_in_book.number_units_stock + trade.volume, 5)
 
-                trader_already_in_book.wealth += (trade.price * trade.volume)
-                trader_already_in_book.margin += (trade.price * trade.volume)
+                trader_already_in_book.wealth = round(
+                    trader_already_in_book.wealth + (trade.price * trade.volume), 5)
+                trader_already_in_book.margin = round(
+                    trader_already_in_book.margin + (trade.price * trade.volume), 5)
                 
                 # I already subtracted the number of shares when issuing the limit order!
 
             elif trade.direction == 'sell':
-                trader_coming_in_book.wealth += (trade.price * trade.volume)
-                trader_coming_in_book.margin += (trade.price * trade.volume)
-                trader_coming_in_book.number_units_stock -= trade.volume
+                trader_coming_in_book.wealth = round(
+                    trader_coming_in_book.wealth + (trade.price * trade.volume), 5)
+                trader_coming_in_book.margin = round(
+                    trader_coming_in_book.margin + (trade.price * trade.volume), 5)
+                trader_coming_in_book.number_units_stock = round(
+                    trader_coming_in_book.number_units_stock - trade.volume, 5)
 
-                trader_already_in_book.wealth -= (trade.price * trade.volume)
+                trader_already_in_book.wealth = round(
+                    trader_already_in_book.wealth - (trade.price * trade.volume), 5)
                 # I already subtracted the margin when issuing the limit order!
-                trader_already_in_book.number_units_stock += trade.volume
+                trader_already_in_book.number_units_stock = round(
+                    trader_already_in_book.number_units_stock + trade.volume, 5)
 
+
+
+
+
+    def update_traders_active_orders(self):
+        """
+        Keep track of active orders issued by each trader
+        """
+        for trader in self.traders:
+            active_limit_buys = [(bid[0], bid[1], bid[2], 'limit_buy') for bid in self.book.bids if bid[3] == trader.trader_id]
+            active_limit_sells = [(ask[0], ask[1], ask[2], 'limit_sell') for ask in self.book.asks if ask[3] == trader.trader_id]
+
+            trader.active_orders = active_limit_buys + active_limit_sells
 

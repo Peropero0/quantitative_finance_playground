@@ -44,18 +44,6 @@ class Trader():
 
             book.order_manager(order, self, time)
 
-            self.update_active_orders(book)
-
-
-    def update_active_orders(self, book):
-        """
-        Keep track of active orders issued by this trader
-        """
-        active_limit_buys = [(bid[0], bid[1], bid[2], 'limit_buy') for bid in book.bids if bid[3] == self.trader_id ]
-        active_limit_sells = [(ask[0], ask[1], ask[2], 'limit_sell') for ask in book.asks if ask[3] == self.trader_id ]
-
-        self.active_orders = active_limit_buys + active_limit_sells
-
 
     def print_active_orders(self, time=None):
         print(self.active_orders)

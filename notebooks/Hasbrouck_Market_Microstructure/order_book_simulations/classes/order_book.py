@@ -80,7 +80,7 @@ class OrderBook():
                 # add another market order for the remaining quantity.
                 # this will call the function again and execute it on the new best ask
                 # since we called the Trade class, we don't have to take care of margin and units
-                self.execute_market_order(quantity - best_available_ask_quantity, 'market_buy', order_id, trader_id)
+                self.execute_market_order(round(quantity - best_available_ask_quantity, 5), 'market_buy', order_id, trader_id)
             else:
                 # if the quantity is less than the available quantity...
                 if quantity != 0:  # <- this is useful to stop the recursion if the market order executes exactly the ask volumes
@@ -98,7 +98,7 @@ class OrderBook():
                 # since we popped the best ask, now we want to put it again in the asks sequence,
                 # with the updated volume 
                 # since we called the Trade class, we don't have to take care of margin and units
-                self.asks.append((best_available_ask_price, best_available_ask_quantity - quantity, bb_order_id, bb_trader_id))
+                self.asks.append((best_available_ask_price, round(best_available_ask_quantity - quantity, 5), bb_order_id, bb_trader_id))
                 self.asks = sorted(self.asks, key=lambda x: (x[0], x[2]))
 
         elif order_type == 'market_sell':
@@ -122,7 +122,7 @@ class OrderBook():
                         )
                 # since we called the Trade class, we don't have to take care of margin and units
 
-                self.execute_market_order(quantity - best_available_bid_quantity, 'market_sell', order_id, trader_id)
+                self.execute_market_order(round(quantity - best_available_bid_quantity, 5), 'market_sell', order_id, trader_id)
             else:
                 if quantity != 0:
                     self.trades[self.time].append(
@@ -137,7 +137,7 @@ class OrderBook():
                             ) 
                 # since we called the Trade class, we don't have to take care of margin and units
 
-                self.bids.append((best_available_bid_price, best_available_bid_quantity - quantity, bb_order_id, bb_trader_id))
+                self.bids.append((best_available_bid_price, round(best_available_bid_quantity - quantity, 5), bb_order_id, bb_trader_id))
                 self.bids = sorted(self.bids, key=lambda x: (-x[0], x[2]))
     
 
@@ -182,7 +182,7 @@ class OrderBook():
                 (index, q_in_order, id) = [(t[0], t[1][1], t[1][2]) for t in orders if t[1][3] == trader_id][0]
 
                 where_to_look.pop(index)
-                quantity = q_in_order - quantity
+                quantity = round(q_in_order - quantity, 5)
 
                 if quantity > 0:
                     # if something remains, then add it again to the book
@@ -231,8 +231,8 @@ class OrderBook():
 
                     # then you are either executed at the next best ask or a limit buy is added
                     # this does this logic recursively
-                    self.add_limit_order(trader, price, quantity - best_available_ask_quantity, 'limit_buy', order_id, trader_id)
-                    trader.margin -= (quantity - best_available_ask_quantity) * price
+                    self.add_limit_order(trader, price, round(quantity - best_available_ask_quantity, 5), 'limit_buy', order_id, trader_id)
+                    trader.margin = round(trader.margin - (quantity - best_available_ask_quantity), 5) * price
 
                 # if the quantity is less than the available quantity, you are executed on the best ask
                 elif quantity <= best_available_ask_quantity:
@@ -250,7 +250,7 @@ class OrderBook():
                 self.bids.append((price, quantity, order_id, trader_id))
                 self.bids = sorted(self.bids, key=lambda x: (-x[0], x[2]))  
 
-                trader.margin -= (quantity * price)
+                trader.margin = round(trader.margin - (quantity * price), 5)
 
         elif order_type == 'limit_sell':
             # this is similar to the limit buy situation
@@ -264,9 +264,9 @@ class OrderBook():
                 if quantity > best_available_bid_quantity:
                     if best_available_bid_quantity != 0:
                         self.execute_market_order(best_available_bid_quantity, 'market_sell', order_id, trader_id)
-                    self.add_limit_order(trader, price, quantity - best_available_bid_quantity, 'limit_sell', order_id, trader_id)
+                    self.add_limit_order(trader, price, round(quantity - best_available_bid_quantity, 5), 'limit_sell', order_id, trader_id)
                     
-                    trader.number_units_stock -= quantity - best_available_bid_quantity
+                    trader.number_units_stock = round(trader.number_units_stock - (quantity - best_available_bid_quantity), 5)
 
                 elif quantity <= best_available_bid_quantity:
                     self.execute_market_order(quantity, 'market_sell', order_id, trader_id)    
@@ -281,7 +281,7 @@ class OrderBook():
                 self.asks.append((price, quantity, order_id, trader_id))
                 self.asks = sorted(self.asks, key=lambda x: (x[0], x[2]))
 
-                trader.number_units_stock -= quantity
+                trader.number_units_stock = round(trader.number_units_stock - quantity, 5)
 
 
     def order_manager(self, order: Order, trader, time=None):
@@ -377,7 +377,7 @@ class OrderBook():
             price_ask = self.asks[0][0]
             price_bid = self.bids[0][0]
 
-            return price_ask - price_bid
+            return round(price_ask - price_bid, 5)
         except Exception:
             return np.nan
 
@@ -479,7 +479,7 @@ class OrderBook():
             bids_orders = self.find_order_with_certain_price(self.bids, self.bids[0][0])
             volume_bid = sum([v[1][1] for v in bids_orders])
 
-            return (volume_bid - volume_ask) / (volume_bid + volume_ask)
+            return round(volume_bid - volume_ask, 5) / (volume_bid + volume_ask)
         
         except Exception:
             return np.nan
@@ -509,17 +509,17 @@ class OrderBook():
                 elif price_bid < self.last_best_bid_price:
                     delta_volume_bid =  - self.last_best_bid_volume
                 else:
-                    delta_volume_bid = volume_bid - self.last_best_bid_volume
+                    delta_volume_bid = round(volume_bid - self.last_best_bid_volume, 5)
 
                 if price_ask > self.last_best_ask_price:
                     delta_volume_ask = - self.last_best_ask_volume
                 elif price_ask < self.last_best_ask_price:
                     delta_volume_ask = volume_ask
                 else:
-                    delta_volume_ask = volume_ask - self.last_best_ask_volume
+                    delta_volume_ask = round(volume_ask - self.last_best_ask_volume, 5)
 
 
-                return delta_volume_bid - delta_volume_ask
+                return round(delta_volume_bid - delta_volume_ask, 5)
         
         
         except Exception:
