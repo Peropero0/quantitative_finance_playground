@@ -168,8 +168,8 @@ class OrderBook():
             rev = False
 
             # I already checked that this is feasible
-            trader.number_units_stock += quantity
-
+            trader.number_units_stock_in_inventory += quantity
+            trader.number_units_stock_in_market = round(trader.number_units_stock_in_market - quantity, 5)
         else:
             raise ValueError('Order type not supported')
         
@@ -266,8 +266,8 @@ class OrderBook():
                         self.execute_market_order(best_available_bid_quantity, 'market_sell', order_id, trader_id)
                     self.add_limit_order(trader, price, round(quantity - best_available_bid_quantity, 5), 'limit_sell', order_id, trader_id)
                     
-                    trader.number_units_stock = round(trader.number_units_stock - (quantity - best_available_bid_quantity), 5)
 
+                    
                 elif quantity <= best_available_bid_quantity:
                     self.execute_market_order(quantity, 'market_sell', order_id, trader_id)    
 
@@ -281,10 +281,10 @@ class OrderBook():
                 self.asks.append((price, quantity, order_id, trader_id))
                 self.asks = sorted(self.asks, key=lambda x: (x[0], x[2]))
 
-                trader.number_units_stock = round(trader.number_units_stock - quantity, 5)
+                trader.number_units_stock_in_inventory = round(trader.number_units_stock_in_inventory - quantity, 5)
+                trader.number_units_stock_in_market = quantity
 
-
-    def order_manager(self, order: Order, trader, time=None):
+    def order_manager(self, order: Order, trader, time=None, update_lists=True):
         # method used to add, execute or modify an order of the order book 
         if time is None:
             self.time += 1
@@ -304,16 +304,17 @@ class OrderBook():
 
         # update the lists useful to track various quantities
 
-        self.update_mid_price_sequence()
-        self.update_micro_price_sequence()
+        if update_lists:
+            self.update_mid_price_sequence()
+            self.update_micro_price_sequence()
 
-        self.update_bid_ask_spread_sequence()
-        self.update_price_volume_sequences()
-        self.update_volume_imbalance_sequence()
-        self.update_order_flow_imbalance_sequence()
+            self.update_bid_ask_spread_sequence()
+            self.update_price_volume_sequences()
+            self.update_volume_imbalance_sequence()
+            self.update_order_flow_imbalance_sequence()
 
-        self.update_book_state_sequence()
-        self.update_depth_sequence()
+            self.update_book_state_sequence()
+            self.update_depth_sequence()
 
 
 

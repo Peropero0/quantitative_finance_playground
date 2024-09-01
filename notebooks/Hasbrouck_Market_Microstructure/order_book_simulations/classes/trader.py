@@ -14,13 +14,14 @@ from prettytable import PrettyTable
 import numpy as np
 
 class Trader():
-    def __init__(self, initial_wealth=100, number_units_stock=0, trader_id=None, check_order_feasibility=False):
+    def __init__(self, initial_cash=100, number_units_stock_in_inventory=0, trader_id=None, check_order_feasibility=False):
         # here you can set different trader attributes
         # like the initial cash, the trading strategy type, the risk aversion, etc...
-        self.wealth = initial_wealth # total wealth
-        self.margin = initial_wealth # what is available to trade
+        self.cash = initial_cash # total cash
+        self.margin = initial_cash # what is available to trade
+        self.number_units_stock_in_inventory = number_units_stock_in_inventory # stocks available to sell
+        self.number_units_stock_in_market = 0 # number of stocks currently being sold on the market
 
-        self.number_units_stock = number_units_stock
         self.trader_id = trader_id
 
         # do I have to check if the trader has enough cash / units to trade?
@@ -28,21 +29,26 @@ class Trader():
 
         self.active_orders = [] # list containing the active orders of the trader (price, volume, order_id, order_type)
 
-        self.wealth_sequence = [] # list containing tuples with (time, wealth)
-        self.number_units_stock_sequence = [] # list containing tuples with (time, units stock)
+        self.cash_sequence = [] # list containing tuples with (time, cash)
+        self.number_units_stock_in_inventory_sequence = [] # list containing tuples with (time, units stock)
+        self.number_units_stock_in_market_sequence = []
+        self.total_wealth_sequence = [] # list containing tuples with (time, total wealth)
 
 
-    def submit_order_to_order_book(self, order_type, price, quantity, book: OrderBook, time=None, verbose=True):
+    def submit_order_to_order_book(self, order_type, price, quantity, book: OrderBook, time=None, verbose=True, update_lists=True):
         # if the order is feasible...
-        if self.check_if_order_is_feasible(book, order_type, price, quantity):
-            # ...generate an Order object and add it to the order book
-            order = Order(order_type=order_type, price=price, quantity=quantity, trader_id=self.trader_id)
+        if not self.check_if_order_is_feasible(book, order_type, price, quantity):
+            order_type = 'do_nothing'
 
-            if verbose:
-                order.print_order()
+        # ...generate an Order object and add it to the order book
+        order = Order(order_type=order_type, price=price, quantity=quantity, trader_id=self.trader_id)
+
+        if verbose:
+            order.print_order()
 
 
-            book.order_manager(order, self, time)
+        book.order_manager(order, self, time, update_lists=update_lists)
+        
 
 
     def print_active_orders(self, time=None):
@@ -79,7 +85,7 @@ class Trader():
                     return False
                 
             elif order_type in ('market_sell', 'limit_sell'):
-                if self.number_units_stock >= quantity:
+                if self.number_units_stock_in_inventory >= quantity:
                     # the trader has enough shares to sell
                     return True
                 else:
