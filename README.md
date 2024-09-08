@@ -90,6 +90,10 @@ Below are my articles, organized in topics and sorted by their most recent publi
 ### **Python**
 [⬆️ Return to index](#articles)
 
+- 📄 [**How to download and format free historical order book dataset**](https://medium.com/@lu.battistoni/how-to-download-and-format-free-historical-order-book-dataset-16b3a84a8e0e) 
+  - 📓 [Notebook](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/finance_notebooks/bybit_flow_analysis/format_flow_from_bybit.ipynb)
+  - 📅 September 2024
+
 - 📄 [**Exploratory Data Analysis in Python**](https://medium.com/@lu.battistoni/exploratory-data-analysis-in-python-6a41a7505f5b) 
   - 📓📙 [Notebooks](https://github.com/Peropero0/quantitative_finance_playground/tree/main/notebooks/finance_notebooks/temperature_analysis)
   - 📅 June 2024
