@@ -119,6 +119,11 @@ Below are my articles, organized in topics and sorted by their most recent publi
   - 📓 [Notebook](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/statistics/wu_for_better_hypothesis_testing.ipynb)
   - 📅 August 2024
 
+- 📄 **[Must-Know in Statistics: interpretation of Logistic Regression coefficients](https://medium.com/@lu.battistoni/must-know-in-statistics-interpretation-of-logistic-regression-coefficients-a332f74305fd)**
+  - 📓 [Notebook](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/statistics/interpretation_of_logistic_regression_estimations.ipynb)
+  - 📅 October 2024
+
+
 ##
 ### Philosophy
 [⬆️ Return to index](#articles)
