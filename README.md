@@ -90,6 +90,10 @@ Below are my articles, organized in topics and sorted by their most recent publi
 ### **Python**
 [⬆️ Return to index](#articles)
 
+- 📄 [**The Dangers of Pandas Hidden Parameters**](https://medium.com/@lu.battistoni/the-dangers-of-pandas-hidden-parameters-1e6a013345e0)
+  - 📓 [Notebook](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/general_python_tutorials/dangers_of_hidden_parameters.ipynb)
+  - 📅 December 2024
+
 - 📄 [**How to download and format free historical order book dataset**](https://medium.com/@lu.battistoni/how-to-download-and-format-free-historical-order-book-dataset-16b3a84a8e0e) 
   - 📓 [Notebook](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/finance_notebooks/bybit_flow_analysis/format_flow_from_bybit.ipynb)
   - 📅 September 2024
