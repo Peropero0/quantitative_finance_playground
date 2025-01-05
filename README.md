@@ -30,6 +30,11 @@ Below are my articles, organized in topics and sorted by their most recent publi
 ### **Finance**
 [⬆️ Return to index](#articles)
 
+
+- 📄 **[Modeling Market Making and Price Impact](https://medium.com/@lu.battistoni/modeling-market-making-and-price-impact-e3fbdbaef30a)**
+  - 📓 [Notebook](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/Hasbrouck_Market_Microstructure/price_impact.ipynb)
+  - 📅 January 2025
+
 - 📄 **[Using the Order Book depth to unveil informed trading](https://medium.com/@lu.battistoni/using-the-order-book-depth-to-unveil-informed-trading-bc92b5288d94)**
   - 📓 [Notebook 1](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/Hasbrouck_Market_Microstructure/order_book_simulations/experiment_2_informed_traders_and_depth.ipynb)
   - 📙 [Notebook 2](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/Hasbrouck_Market_Microstructure/order_book_simulations/experiment_3_risk_and_depth.ipynb)
