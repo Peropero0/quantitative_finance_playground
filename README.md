@@ -31,6 +31,10 @@ Below are my articles, organized in topics and sorted by their most recent publi
 [⬆️ Return to index](#articles)
 
 
+- 📄 **[Modeling Competition between Market Makers](https://medium.com/@lu.battistoni/modeling-competition-between-market-makers-89bec121fedb)**
+  - 📓 [Notebook](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/Hasbrouck_Market_Microstructure/market_makers_game_theory.ipynb)
+  - 📅 January 2025
+
 - 📄 **[Modeling Market Making and Price Impact](https://medium.com/@lu.battistoni/modeling-market-making-and-price-impact-e3fbdbaef30a)**
   - 📓 [Notebook](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/Hasbrouck_Market_Microstructure/price_impact.ipynb)
   - 📅 January 2025
