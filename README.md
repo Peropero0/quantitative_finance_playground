@@ -1,13 +1,11 @@
 # Welcome to my Quantitative Finance Playground!
 
 ### Overview
-This repository serves as a hub for listing my articles and experiments. I primarly focus on Quantitative Finance and Machine Learning.
-
-I am currently studying Hasbrouck’s Empirical Market Microstructure, an interesting technical introduction on market making.
+This repository serves as a hub for listing my articles and experiments. I primarly focus on Data Science and Machine Learning, with applications to Quantitative Finance.
 
  
 ### About Me
-Starting with a background in Physics and spending six years in finance, I've currently found my groove as a Quant.
+Starting with a background in Physics and spending eight years in finance, I've currently found my groove as a Quant.
 
 When I'm not crunching numbers, I'm absorbed in the pages of a book or tending to my garden.
 
