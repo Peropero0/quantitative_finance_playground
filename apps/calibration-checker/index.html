@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calibration Checker</title>
+<meta name="description" content="Upload predicted probabilities and real outcomes, get a reliability diagram and Brier score in your browser. No data leaves your machine.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎯</text></svg>">
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header>
+    <h1>Calibration Checker</h1>
+    <p class="lede">
+      Say a weather app tells you there is a 70% chance of rain. If it is being honest,
+      it should actually rain on about 70 out of every 100 days it says that. That
+      property is called <strong>calibration</strong>: predicted probabilities matching
+      what actually happens over time. It is a different thing from accuracy. A model
+      can pick the right outcome most of the time and still hand out probabilities that
+      are consistently too confident or too cautious.
+    </p>
+    <p class="lede">
+      This tool checks that. Upload a CSV with a column of predicted probabilities and a
+      column of actual outcomes, and it draws a <strong>reliability diagram</strong> and
+      computes a <strong>Brier score</strong> for you, right here in your browser.
+      Nothing gets uploaded anywhere, everything runs in JavaScript on your machine.
+    </p>
+  </header>
+
+  <section class="panel info-panel">
+    <h2>How to use it</h2>
+    <ol class="steps">
+      <li>Load the demo data below, or upload your own CSV.</li>
+      <li>Check the column mapping the app guesses for you, and fix it if needed.</li>
+      <li>Pick a bin count and hit Analyze.</li>
+    </ol>
+
+    <h3>What your CSV needs</h3>
+    <div class="table-scroll">
+      <table class="spec-table">
+        <thead>
+          <tr><th>Column</th><th>Required</th><th>What it should contain</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>predicted_prob</code></td>
+            <td>yes</td>
+            <td>A number between 0 and 1: the probability your model or forecaster assigned to the outcome.</td>
+          </tr>
+          <tr>
+            <td><code>outcome</code></td>
+            <td>yes</td>
+            <td>0 or 1: whether that outcome actually happened.</td>
+          </tr>
+          <tr>
+            <td><code>segment</code></td>
+            <td>optional</td>
+            <td>A category label, if you want to compare calibration across subgroups (up to 6 groups).</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="hint">
+      Column names do not need to match exactly. You will get to remap them after loading
+      the file. One row per prediction, please, not per underlying event.
+    </p>
+    <button class="btn-secondary" id="download-sample-btn">Download a sample CSV</button>
+  </section>
+
+  <section class="panel info-panel">
+    <h2>What is the Brier score</h2>
+    <p>
+      The Brier score is the mean squared error between the predicted probability and
+      the actual outcome (0 or 1). It is a single number that summarizes how good a set
+      of probabilities is, the same way MSE summarizes a regression. 0 means perfect,
+      and 0.25 is what a coin-flip guess of 50% gets you when the true rate is 50/50.
+      Full definition on <a href="https://en.wikipedia.org/wiki/Brier_score" target="_blank" rel="noopener">Wikipedia</a>.
+    </p>
+    <p>
+      What we actually want to show is not the score alone, but where it breaks down.
+      A model can have a decent overall Brier score and still be badly wrong for a
+      chunk of its predictions, most commonly the ones it is most confident about. The
+      reliability diagrams and the segment breakdown below are built to catch exactly
+      that.
+    </p>
+  </section>
+
+  <section class="panel data-panel">
+    <h2>Load your data</h2>
+    <p>
+      Use the built-in demo, or upload your own file. The demo is 11,400 real
+      observations: bookmaker implied probabilities from 10 seasons of Premier League
+      matches (2015/16 to 2024/25), checked against whether each outcome (home win, draw,
+      away win) actually happened. The <code>segment</code> column splits matches by the
+      strength of the favorite (Strong, Mid, Weak), based on final league position that
+      season. Full methodology in
+      <a href="https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/data_science/sports_analytics/bookmaker_calibration_analysis.ipynb" target="_blank" rel="noopener">the notebook</a>.
+    </p>
+    <div class="input-row">
+      <button class="btn-demo" id="demo-btn">&#9654; Load demo data (football odds)</button>
+      <label class="file-btn">
+        <input type="file" id="file-input" accept=".csv">
+        Upload your own CSV&hellip;
+      </label>
+      <span id="file-status" class="file-status"></span>
+    </div>
+
+    <div id="mapping-row" class="mapping-row hidden">
+      <div class="field">
+        <label for="pred-col">Predicted probability column</label>
+        <select id="pred-col"></select>
+      </div>
+      <div class="field">
+        <label for="outcome-col">Actual outcome column (0/1)</label>
+        <select id="outcome-col"></select>
+      </div>
+      <div class="field">
+        <label for="segment-col">Segment column (optional)</label>
+        <select id="segment-col">
+          <option value="">&mdash; none &mdash;</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="bin-count">Bins</label>
+        <select id="bin-count">
+          <option value="5">5</option>
+          <option value="10" selected>10</option>
+          <option value="15">15</option>
+          <option value="20">20</option>
+        </select>
+      </div>
+      <button class="btn-primary" id="analyze-btn">Analyze</button>
+    </div>
+    <p id="error-msg" class="error-msg hidden"></p>
+  </section>
+
+  <section id="results" class="hidden">
+
+    <div class="stat-row">
+      <div class="stat-tile">
+        <div class="stat-label">Brier score (overall)</div>
+        <div class="stat-value" id="brier-overall">&mdash;</div>
+        <div class="stat-sub" id="brier-baseline-note">lower is better &middot; 0 = perfect</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-label">Observations</div>
+        <div class="stat-value" id="stat-n">&mdash;</div>
+        <div class="stat-sub" id="stat-base-rate"></div>
+      </div>
+    </div>
+
+    <div id="insights-panel" class="chart-panel insights-panel hidden">
+      <h2>What this tells you</h2>
+      <ul id="insights-list" class="insights-list"></ul>
+    </div>
+
+    <div class="chart-panel">
+      <h2>Reliability diagram, aggregate</h2>
+      <p class="chart-sub">Predicted probability (x) vs. observed frequency (y), binned across all observations. Points on the dashed diagonal are perfectly calibrated.</p>
+      <div class="chart-box">
+        <canvas id="reliability-chart-overall"></canvas>
+      </div>
+    </div>
+
+    <div id="segment-chart-wrap" class="chart-panel hidden">
+      <h2>Reliability diagram, by segment</h2>
+      <p class="chart-sub">Same idea, one line per segment, so you can see whether calibration holds up equally across subgroups.</p>
+      <div class="chart-box">
+        <canvas id="reliability-chart-segment"></canvas>
+      </div>
+    </div>
+
+    <div id="segment-table-wrap" class="chart-panel hidden">
+      <h2>Brier score by segment</h2>
+      <div class="table-scroll">
+        <table id="segment-table">
+          <thead><tr><th>Segment</th><th>Brier score</th><th>n</th><th>share</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+  </section>
+
+  <footer>
+    <p>
+      Part of the <a href="https://github.com/Peropero0/quantitative_finance_playground" target="_blank" rel="noopener">quantitative_finance_playground</a> repo.
+    </p>
+  </footer>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
