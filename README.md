@@ -21,6 +21,7 @@ Below are my articles, organized in topics and sorted by their most recent publi
 - [Python](#python)
 - [Statistics](#statistics)
 - [Philosophy](#philosophy)
+- [Tools](#tools)
 
 ## 
 ##
@@ -141,6 +142,15 @@ Below are my articles, organized in topics and sorted by their most recent publi
 
 - 📄 **[Do you have what it takes to become a trader?](https://medium.com/@lu.battistoni/do-you-have-what-it-takes-to-become-a-trader-cf3909e0f5da)**
   - 📅 August 2024
+
+
+
+##
+### **Tools**
+[⬆️ Return to index](#articles)
+
+- 🛠️ **[Calibration Checker](https://github.com/Peropero0/quantitative_finance_playground/tree/main/apps/calibration-checker)**
+  - A small web app [(click here to visit)](https://peropero0.github.io/quantitative_finance_playground/apps/calibration-checker/) to check how well-calibrated a set of predicted probabilities is (reliability diagrams, Brier score, and more).
 
 
 
