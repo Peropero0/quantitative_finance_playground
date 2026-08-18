@@ -32,29 +32,29 @@ Below are my articles, organized in topics and sorted by their most recent publi
 
 
 - 📄 **[Modeling Competition between Market Makers](https://medium.com/@lu.battistoni/modeling-competition-between-market-makers-89bec121fedb)**
-  - 📓 [Notebook](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/Hasbrouck_Market_Microstructure/market_makers_game_theory.ipynb)
+  - 📓 [Notebook](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/finance/market_microstructure/market_makers_game_theory.ipynb)
   - 📅 January 2025
 
 - 📄 **[Modeling Market Making and Price Impact](https://medium.com/@lu.battistoni/modeling-market-making-and-price-impact-e3fbdbaef30a)**
-  - 📓 [Notebook](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/Hasbrouck_Market_Microstructure/price_impact.ipynb)
+  - 📓 [Notebook](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/finance/market_microstructure/price_impact.ipynb)
   - 📅 January 2025
 
 - 📄 **[Using the Order Book depth to unveil informed trading](https://medium.com/@lu.battistoni/using-the-order-book-depth-to-unveil-informed-trading-bc92b5288d94)**
-  - 📓 [Notebook 1](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/Hasbrouck_Market_Microstructure/order_book_simulations/experiment_2_informed_traders_and_depth.ipynb)
-  - 📙 [Notebook 2](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/Hasbrouck_Market_Microstructure/order_book_simulations/experiment_3_risk_and_depth.ipynb)
+  - 📓 [Notebook 1](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/finance/market_microstructure/order_book_simulations/experiment_2_informed_traders_and_depth.ipynb)
+  - 📙 [Notebook 2](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/finance/market_microstructure/order_book_simulations/experiment_3_risk_and_depth.ipynb)
   - 📅 August 2024
 
 - 📄 **[When should an investor prefer a Market Order over a Limit Order?](https://medium.com/@lu.battistoni/when-should-an-investor-prefer-a-market-order-over-a-limit-order-593bc0fd6dd9)**
-  - 📓 [Notebook](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/Hasbrouck_Market_Microstructure/order_book_simulations/experiment_1_CMSW_framework.ipynb)
+  - 📓 [Notebook](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/finance/market_microstructure/order_book_simulations/experiment_1_CMSW_framework.ipynb)
   - 📅 August 2024
 
 - 📄 [**An Order Book simulator in Python**](https://medium.com/@lu.battistoni/an-order-book-simulator-in-python-b7b59ec82258)  
-  - 📁 [Folder](https://github.com/Peropero0/quantitative_finance_playground/tree/main/notebooks/Hasbrouck_Market_Microstructure/order_book_simulations)
+  - 📁 [Folder](https://github.com/Peropero0/quantitative_finance_playground/tree/main/notebooks/finance/market_microstructure/order_book_simulations)
   - 📅 July 2024
 
 
 - 📄 [**A brilliant way to represent the Order Flow in Python**](https://medium.com/@lu.battistoni/a-brilliant-way-to-represent-the-order-flow-in-python-fb96318e1070)
-  - 📓 [Notebook](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/Hasbrouck_Market_Microstructure/order_book_simulations/order_flow_representation.ipynb)
+  - 📓 [Notebook](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/finance/market_microstructure/order_book_simulations/order_flow_representation.ipynb)
   - 📅 July 2024
 
 - 📄 [**Understanding Futures contract specifications**](https://medium.com/@lu.battistoni/understanding-futures-contract-specifications-c8be50844acd)
@@ -69,7 +69,7 @@ Below are my articles, organized in topics and sorted by their most recent publi
 
 
 - 📄 [**Distribution of the Order Flow in Python**](https://medium.com/technological-singularity/distribution-of-the-order-flow-in-python-d7ba059dbf13)
-  - 📓 [Notebook](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/Hasbrouck_Market_Microstructure/sequential_trade_model_part_3.ipynb)
+  - 📓 [Notebook](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/finance/market_microstructure/sequential_trade_model_part_3.ipynb)
   - 📅 Apr 2024
 
 
@@ -79,19 +79,19 @@ Below are my articles, organized in topics and sorted by their most recent publi
  
 
 - 📄 [**Sequential Trade Model for Asymmetrical Information**](https://medium.com/@lu.battistoni/sequential-trade-model-for-asymmetrical-information-54245268f802)
-  - 📓 [Notebook 1](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/Hasbrouck_Market_Microstructure/sequential_trade_model.ipynb)
+  - 📓 [Notebook 1](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/finance/market_microstructure/sequential_trade_model.ipynb)
 
-  - 📙 [Notebook 2](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/Hasbrouck_Market_Microstructure/sequential_trade_model_part_2.ipynb)  
+  - 📙 [Notebook 2](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/finance/market_microstructure/sequential_trade_model_part_2.ipynb)  
   - 📅 Apr 2024
 
 
 - 📄 [**Relaxing Linear Regression assumptions — A Roll model application**](https://medium.com/@lu.battistoni/relaxing-linear-regression-assumptions-a-roll-model-application-59e310dde6ce)
-  - 📓 [Notebook](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/Hasbrouck_Market_Microstructure/roll_model_relaxing_of_assumptions.ipynb)
+  - 📓 [Notebook](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/finance/market_microstructure/roll_model_relaxing_of_assumptions.ipynb)
   - 📅 Mar 2024    
 
 
 - 📄 [**The Roll Model Under Serial Dependence**](https://python.plainenglish.io/roll-model-under-serial-dependence-f9ba693446f9)
-  - 📓 [Notebook](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/Hasbrouck_Market_Microstructure/roll_model_serial_dependence.ipynb)
+  - 📓 [Notebook](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/finance/market_microstructure/roll_model_serial_dependence.ipynb)
   - 📅 Feb 2024
 
 
@@ -100,24 +100,24 @@ Below are my articles, organized in topics and sorted by their most recent publi
 [⬆️ Return to index](#articles)
 
 - 📄 [**The Dangers of Pandas Hidden Parameters**](https://medium.com/@lu.battistoni/the-dangers-of-pandas-hidden-parameters-1e6a013345e0)
-  - 📓 [Notebook](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/general_python_tutorials/dangers_of_hidden_parameters.ipynb)
+  - 📓 [Notebook](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/python/general_python_tutorials/dangers_of_hidden_parameters.ipynb)
   - 📅 December 2024
 
 - 📄 [**How to download and format free historical order book dataset**](https://medium.com/@lu.battistoni/how-to-download-and-format-free-historical-order-book-dataset-16b3a84a8e0e) 
-  - 📓 [Notebook](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/finance_notebooks/bybit_flow_analysis/format_flow_from_bybit.ipynb)
+  - 📓 [Notebook](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/python/bybit_flow_analysis/format_flow_from_bybit.ipynb)
   - 📅 September 2024
 
 - 📄 [**Exploratory Data Analysis in Python**](https://medium.com/@lu.battistoni/exploratory-data-analysis-in-python-6a41a7505f5b) 
-  - 📓📙 [Notebooks](https://github.com/Peropero0/quantitative_finance_playground/tree/main/notebooks/finance_notebooks/temperature_analysis)
+  - 📓📙 [Notebooks](https://github.com/Peropero0/quantitative_finance_playground/tree/main/notebooks/python/temperature_analysis)
   - 📅 June 2024
 
 - 📄 [**Understanding Pandas MultiIndex in Finance**](https://medium.com/@lu.battistoni/understanding-pandas-multiindex-in-finance-cdfdda16f792)
-  - 📓 [Notebook](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/general_python_tutorials/multiindexing_tutorial.ipynb)
+  - 📓 [Notebook](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/python/general_python_tutorials/multiindexing_tutorial.ipynb)
   - 📅 May 2024
 
 
 - 📄 [**Backtesting a systematic trading strategy in Python**](https://medium.com/@lu.battistoni/backtesting-a-systematic-trading-strategy-in-python-e08263e888ab)
-  - 📓 [Notebook](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/simple_vectorial_backtest/simple_vectorial_backtest.ipynb)
+  - 📓 [Notebook](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/finance/simple_vectorial_backtest/simple_vectorial_backtest.ipynb)
   - 📅 May 2024
 
 ##
@@ -125,7 +125,7 @@ Below are my articles, organized in topics and sorted by their most recent publi
 [⬆️ Return to index](#articles)
 
 - 📄 **[Must-Know in Statistics: The Bivariate Normal Projection Explained](https://medium.com/@lu.battistoni/must-know-in-statistics-the-bivariate-normal-projection-explained-ace7b2f70b5b)**
-  - 📓 [Notebook](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/Hasbrouck_Market_Microstructure/bivariate_normal_projection.ipynb)
+  - 📓 [Notebook](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/statistics/bivariate_normal_projection.ipynb)
   - 📅 August 2024
 
 - 📄 **[Using the concept of Wú (無) for better hypothesis testing](https://medium.com/@lu.battistoni/using-the-concept-of-w%C3%BA-%E7%84%A1-for-better-hypothesis-testing-689fdbafaaf6)**
