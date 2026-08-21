@@ -135,6 +135,9 @@ Below are my articles, organized in topics and sorted by their most recent publi
   - 📓 [Notebook](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/statistics/interpretation_of_logistic_regression_estimations.ipynb)
   - 📅 October 2024
 
+- 📄 **[Must-Know in Machine Learning: Is Your Model’s Confidence Actually Trustworthy?](https://medium.com/@lu.battistoni/must-know-in-machine-learning-is-your-models-confidence-actually-trustworthy-4f8116d202e1?postPublishedType=initial)**
+  - 📓 [Notebook](https://github.com/Peropero0/quantitative_finance_playground/blob/main/notebooks/data_science/sports_analytics/bookmaker_calibration_analysis.ipynb)
+  - 📅 August 2026
 
 ##
 ### Philosophy
