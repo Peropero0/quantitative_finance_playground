@@ -13,6 +13,7 @@ When I'm not crunching numbers, I'm absorbed in the pages of a book or tending t
 ### Feedback and Contacts
 Your feedback is important! If you have any questions, suggestions, or feedback, please don't hesitate to reach out to me via [**LinkedIn**](https://www.linkedin.com/in/luigi-battistoni/).
 
+Here you can find my [**Medium profile**](https://medium.com/@lu.battistoni) and [**Substack profile**](https://substack.com/@luigibattistoni).
 
 ## Articles
 Below are my articles, organized in topics and sorted by their most recent publication date. Where applicable, I will provide links to Python notebooks containing the plots and computations used in each piece.
